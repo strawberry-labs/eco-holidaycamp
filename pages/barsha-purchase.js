@@ -32,27 +32,39 @@ export default function Register() {
           selectedWeeks: Array(6).fill(false),
           daysOfWeek: Array(6).fill([]),
         },
-        price: 0,
+        priceDetails: { price: 0, details: [] },
       }))
     );
   }, [quantity, type]);
 
   const calculatePrice = (form) => {
     let price = 0;
+    let details = [];
+
     if (form.weeks.allWeeks) {
       price = 5100;
+      details.push({ description: "All weeks", cost: 5100 });
     } else {
-      form.weeks.selectedWeeks.forEach((selected, i) => {
+      form.weeks.selectedWeeks.forEach((selected, weekIndex) => {
         if (selected) {
-          if (form.weeks.daysOfWeek[i].length === 5) {
-            price += 945; // Full week price
+          let weekCost = 0;
+          let weekDetails = [];
+
+          if (form.weeks.daysOfWeek[weekIndex].length === 5) {
+            weekCost = 945; // Full week price
+            weekDetails.push({ description: "Full week", cost: 945 });
           } else {
-            price += 200 * form.weeks.daysOfWeek[i].length; // Per day price
+            form.weeks.daysOfWeek[weekIndex].forEach((day) => {
+              weekCost += 200;
+              weekDetails.push({ description: day, cost: 200 });
+            });
           }
+          price += weekCost;
+          details.push({ week: `Week ${weekIndex + 1}`, details: weekDetails });
         }
       });
     }
-    return price;
+    return { price, details };
   };
 
   const handleWeeksChange = (index, weekIndex, event) => {
@@ -95,7 +107,7 @@ export default function Register() {
         dayArray.push(value);
       }
     }
-    updatedForms[index].price = calculatePrice(updatedForms[index]); // Recalculate price on change
+    updatedForms[index].priceDetails = calculatePrice(updatedForms[index]); // Recalculate price on change
     setForms(updatedForms);
   };
 
@@ -104,7 +116,7 @@ export default function Register() {
     const updatedForms = [...forms];
     const currentForm = updatedForms[index];
     currentForm[name] = type === "checkbox" ? checked : value;
-    currentForm.price = calculatePrice(currentForm); // Update price on change
+    currentForm.priceDetails = calculatePrice(currentForm); // Update price on change
     setForms(updatedForms);
   };
 
@@ -339,15 +351,40 @@ export default function Register() {
           </button>
         </form>
       </div>
-      <div className="w-1/4 sticky top-0 h-screen flex flex-col items-center justify-center bg-gray-100">
-        <div className="text-center p-4">
-          <p className="text-lg font-bold mb-2">
-            Total Price: ${forms.reduce((total, form) => total + form.price, 0)}{" "}
-            AED
+      <div className="w-1/4 sticky top-0 h-screen flex flex-col py-4 px-8 bg-gray-100 overflow-y-auto">
+        <img
+          src="https://cdn.strawberrylabs.net/strawberrylabs/ecoventure-main-logo.webp"
+          alt="Company Logo"
+          className="w-3/4 mt-4 mb-4"
+        />{" "}
+        {/* Logo at the top of the sidebar */}
+        <div className="mt-4">
+          <h3 className="text-lg font-bold mb-2">Price Breakdown</h3>
+          {forms.map((form, index) => (
+            <div key={index} className="mb-4">
+              <h4 className="font-bold">Attendee {index + 1}:</h4>
+              {form.priceDetails.details.map((item, idx) => (
+                <div key={idx}>
+                  {item.week ? <h5 className="pl-2">{item.week}</h5> : null}
+                  {item.details &&
+                    item.details.map((detail, detailIndex) => (
+                      <p className="pl-4" key={detailIndex}>
+                        {detail.description} - {detail.cost}
+                      </p>
+                    ))}
+                </div>
+              ))}
+              <p className="font-bold">Total: {form.priceDetails.price}</p>
+            </div>
+          ))}
+          <p className="text-lg font-bold mt-6">
+            Total Price: AED{" "}
+            {forms.reduce((total, form) => total + form.priceDetails.price, 0)}
           </p>
+
           <button
             onClick={handleSubmit}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full"
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full mt-4"
           >
             Proceed to Payment
           </button>
