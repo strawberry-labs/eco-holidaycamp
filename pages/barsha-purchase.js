@@ -1,44 +1,37 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import CryptoJS from "crypto-js";
 
 export default function Register() {
   const router = useRouter();
   const { quantity, type } = router.query;
   const [forms, setForms] = useState([]);
-
-  const generateGUID = () => {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
-      /[xy]/g,
-      function (c) {
-        const r = (Math.random() * 16) | 0,
-          v = c === "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-      }
-    );
-  };
+  const [orderDetails, setOrderDetails] = useState({
+    email: "",
+    emergencyContact1Name: "",
+    emergencyContact1Phone: "",
+    emergencyContact2Name: "",
+    emergencyContact2Phone: "",
+    termsAndConditions: false,
+    orderConfirmation: false,
+    bookingConfirmation: false,
+  });
 
   useEffect(() => {
-    // Initialize forms with default values
     setForms(
-      Array.from({ length: parseInt(quantity || 1) }, () => ({
+      Array.from({ length: parseInt(quantity || "1") }, () => ({
         firstName: "",
         lastName: "",
-        email: "",
         dateOfBirth: "",
         ageGroup: "",
         toiletTrained: false,
         attendedOneTerm: false,
         gender: "",
-        program: type,
+        program: type || "",
         medicalConditions: "",
         swimmingAbility: "",
         schoolName: "",
         friendsOrSiblingsNames: "",
-        emergencyContact1Name: "",
-        emergencyContact1Phone: "",
-        emergencyContact2Name: "",
-        emergencyContact2Phone: "",
+        activitySelection: "",
         weeks: {
           allWeeks: false,
           selectedWeeks: Array(6).fill(false),
@@ -48,6 +41,64 @@ export default function Register() {
       }))
     );
   }, [quantity, type]);
+
+  const emailRegex =
+    /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g;
+  const phoneRegex = /^\d{8}$/;
+
+  const handleChange = (index, event) => {
+    const { name, value, type, checked } = event.target;
+    const updatedForms = [...forms];
+    updatedForms[index][name] = type === "checkbox" ? checked : value;
+    setForms(updatedForms);
+  };
+
+  const handleOrderDetailsChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    setOrderDetails((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleWeeksChange = (index, weekIndex, event) => {
+    const updatedForms = [...forms];
+    const currentForm = updatedForms[index].weeks;
+    const { name, checked, value } = event.target;
+
+    if (name === "allWeeks") {
+      currentForm.allWeeks = checked;
+      currentForm.selectedWeeks.fill(checked);
+      currentForm.daysOfWeek.forEach((_, i) => {
+        currentForm.daysOfWeek[i] = checked
+          ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+          : [];
+      });
+    } else if (name.startsWith("week")) {
+      currentForm.selectedWeeks[weekIndex] = checked;
+      if (checked) {
+        currentForm.daysOfWeek[weekIndex] = [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+        ];
+      } else {
+        currentForm.daysOfWeek[weekIndex] = [];
+      }
+    } else if (name.startsWith("day")) {
+      const dayArray = currentForm.daysOfWeek[weekIndex];
+      const dayIndex = dayArray.indexOf(value);
+      if (dayIndex > -1) {
+        dayArray.splice(dayIndex, 1);
+      } else {
+        dayArray.push(value);
+      }
+    }
+    updatedForms[index].priceDetails = calculatePrice(updatedForms[index]);
+    setForms(updatedForms);
+  };
 
   const calculatePrice = (form) => {
     let price = 0;
@@ -61,7 +112,6 @@ export default function Register() {
         if (selected) {
           let weekCost = 0;
           let weekDetails = [];
-
           if (form.weeks.daysOfWeek[weekIndex].length === 5) {
             weekCost = 945; // Full week price
             weekDetails.push({ description: "Full week", cost: 945 });
@@ -79,240 +129,227 @@ export default function Register() {
     return { price, details };
   };
 
-  const handleWeeksChange = (index, weekIndex, event) => {
-    const updatedForms = [...forms];
-    const currentForm = updatedForms[index].weeks;
-    const { name, checked, value } = event.target;
-
-    if (name === "allWeeks") {
-      // Handle selecting all weeks
-      currentForm.allWeeks = checked;
-      currentForm.selectedWeeks.fill(checked);
-      currentForm.daysOfWeek.forEach((_, i) => {
-        currentForm.daysOfWeek[i] = checked
-          ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-          : [];
-      });
-    } else if (name.startsWith("week")) {
-      // Toggle individual week
-      currentForm.selectedWeeks[weekIndex] = checked;
-      if (checked) {
-        // Automatically select all days when a week is selected
-        currentForm.daysOfWeek[weekIndex] = [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-        ];
-      } else {
-        // Clear all days if the week is deselected
-        currentForm.daysOfWeek[weekIndex] = [];
-      }
-    } else if (name.startsWith("day")) {
-      // Handle day selection for specific week
-      const dayArray = currentForm.daysOfWeek[weekIndex];
-      const dayIndex = dayArray.indexOf(value);
-      if (dayIndex > -1) {
-        dayArray.splice(dayIndex, 1);
-      } else {
-        dayArray.push(value);
-      }
-    }
-    updatedForms[index].priceDetails = calculatePrice(updatedForms[index]); // Recalculate price on change
-    setForms(updatedForms);
-  };
-
-  const handleChange = (index, event) => {
-    const { name, value, type, checked } = event.target;
-    const updatedForms = [...forms];
-    const currentForm = updatedForms[index];
-    currentForm[name] = type === "checkbox" ? checked : value;
-    currentForm.priceDetails = calculatePrice(currentForm); // Update price on change
-    setForms(updatedForms);
+  const validateForm = () => {
+    const isValidEmail = emailRegex.test(orderDetails.email);
+    // const isValidPhone1 = phoneRegex.test(orderDetails.emergencyContact1Phone);
+    // const isValidPhone2 = phoneRegex.test(orderDetails.emergencyContact2Phone);
+    const hasAllRequiredFields = forms.every((form) => {
+      return (
+        form.firstName &&
+        form.lastName &&
+        form.dateOfBirth &&
+        form.ageGroup &&
+        form.gender &&
+        form.medicalConditions &&
+        form.swimmingAbility &&
+        form.schoolName &&
+        form.activitySelection &&
+        form.weeks.selectedWeeks.some(Boolean)
+      );
+    });
+    return (
+      isValidEmail &&
+      // isValidPhone1 &&
+      // isValidPhone2 &&
+      hasAllRequiredFields &&
+      orderDetails.termsAndConditions &&
+      orderDetails.orderConfirmation &&
+      orderDetails.bookingConfirmation
+    );
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log("Order Details:", orderDetails);
+    console.log("Attendee Details:", forms);
+    if (validateForm()) {
+      const orderAmount = forms.reduce(
+        (total, form) => total + form.priceDetails.price,
+        0
+      );
+      console.log("Total Order Amount:", orderAmount);
 
-    console.log("All form data submitted:", forms);
+      const response = await fetch("/api/submitOrder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderAmount,
+          orderDetails,
+          forms,
+        }),
+      });
 
-    const orderAmount = forms.reduce(
-      (total, form) => total + form.priceDetails.price,
-      0
-    );
-
-    const response = await fetch("/api/submitOrder", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        orderAmount,
-      }),
-    });
-
-    if (response.ok) {
-      const { redirect_url } = await response.json();
-      window.location.href = redirect_url;
+      if (response.ok) {
+        const { redirect_url } = await response.json();
+        window.location.href = redirect_url;
+      } else {
+        const { error } = await response.json();
+        alert("Error: " + error);
+      }
     } else {
-      const { error } = await response.json();
-      alert("Error: " + error);
+      alert(
+        "Please check your entries and make sure all required fields are filled correctly."
+      );
     }
   };
 
   return (
     <div className="flex min-h-screen bg-white text-black">
-      <div className="flex-grow p-8 overflow-auto">
+      <div className="flex-grow w-3/4 p-8 overflow-auto">
         <h1 className="text-3xl font-bold mb-6">Register/Purchase Tickets</h1>
         <form onSubmit={handleSubmit}>
           {forms.map((form, index) => (
-            <div key={index} className="mb-8 p-4 border rounded shadow-sm">
-              <h2 className="font-bold text-lg mb-4">
-                Attendee {index + 1} Information
-              </h2>
-              <div className="grid grid-cols-1 gap-4">
-                <input
-                  type="text"
-                  name="firstName"
-                  value={form.firstName}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="First Name"
-                  className="border p-2 w-full"
-                />
-                <input
-                  type="text"
-                  name="lastName"
-                  value={form.lastName}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="Last Name"
-                  className="border p-2 w-full"
-                />
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="Email"
-                  className="border p-2 w-full"
-                />
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={form.dateOfBirth}
-                  onChange={(e) => handleChange(index, e)}
-                  className="border p-2 w-full"
-                />
-                <select
-                  name="ageGroup"
-                  value={form.ageGroup}
-                  onChange={(e) => handleChange(index, e)}
-                  className="border p-2 w-full"
-                >
-                  {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
-                    <option key={n} value={n === 12 ? "11+" : n.toString()}>
-                      {n === 12 ? "11+" : n.toString()}
+            <div key={index} className="mb-6 p-4 border rounded">
+              <h3 className="text-lg font-semibold mb-2">
+                Attendee {index + 1} Details:
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                <label>
+                  First Name <span className="text-red-500">*</span>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={form.firstName}
+                    onChange={(e) => handleChange(index, e)}
+                    placeholder="First Name"
+                    className="mt-1 p-2 w-full border rounded"
+                  />
+                </label>
+                <label>
+                  Last Name <span className="text-red-500">*</span>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={form.lastName}
+                    onChange={(e) => handleChange(index, e)}
+                    placeholder="Last Name"
+                    className="mt-1 p-2 w-full border rounded"
+                  />
+                </label>
+                <label>
+                  Date of Birth <span className="text-red-500">*</span>
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={form.dateOfBirth}
+                    onChange={(e) => handleChange(index, e)}
+                    className="mt-1 p-2 w-full border rounded"
+                  />
+                </label>
+                <label>
+                  Age Group <span className="text-red-500">*</span>
+                  <select
+                    name="ageGroup"
+                    value={form.ageGroup}
+                    onChange={(e) => handleChange(index, e)}
+                    className="mt-1 p-2 w-full border rounded"
+                  >
+                    <option value="">Select Age Group</option>
+                    {Array.from({ length: 9 }, (_, i) => i + 3).map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                    <option value="11+">11+</option>
+                  </select>
+                </label>
+                <label>
+                  Gender <span className="text-red-500">*</span>
+                  <select
+                    name="gender"
+                    value={form.gender}
+                    onChange={(e) => handleChange(index, e)}
+                    className="mt-1 p-2 w-full border rounded"
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </label>
+                <label>
+                  Activity <span className="text-red-500">*</span>
+                  <select
+                    name="activitySelection"
+                    value={form.activitySelection}
+                    onChange={(e) => handleChange(index, e)}
+                    className="mt-1 p-2 w-full border rounded"
+                  >
+                    <option value="">Select Activity</option>
+                    <option value="Multi Activity">Multi Activity</option>
+                    <option value="ETB + Multi Activity">
+                      ETB + Multi Activity
                     </option>
-                  ))}
-                </select>
-                <label className="flex items-center">
+                  </select>
+                </label>
+                <label>
+                  Toilet Trained <span className="text-red-500">*</span>
                   <input
                     type="checkbox"
+                    name="toiletTrained"
                     checked={form.toiletTrained}
                     onChange={(e) => handleChange(index, e)}
-                    name="toiletTrained"
-                  />{" "}
-                  Toilet Trained
+                    className="ml-2"
+                  />
                 </label>
-                <label className="flex items-center">
+                <label>
+                  Attended One Term <span className="text-red-500">*</span>
                   <input
                     type="checkbox"
+                    name="attendedOneTerm"
                     checked={form.attendedOneTerm}
                     onChange={(e) => handleChange(index, e)}
-                    name="attendedOneTerm"
-                  />{" "}
-                  Attended One Term
+                    className="ml-2"
+                  />
                 </label>
-                <select
-                  name="gender"
-                  value={form.gender}
-                  onChange={(e) => handleChange(index, e)}
-                  className="border p-2 w-full"
-                >
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-                <textarea
-                  name="medicalConditions"
-                  value={form.medicalConditions}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="Medical Conditions"
-                  className="border p-2 w-full"
-                />
-                <select
-                  name="swimmingAbility"
-                  value={form.swimmingAbility}
-                  onChange={(e) => handleChange(index, e)}
-                  className="border p-2 w-full"
-                >
-                  <option value="">Select Swimming Ability</option>
-                  <option value="Non-swimmer">Non-swimmer</option>
-                  <option value="Learning to swim - can swim a short distance unaided">
-                    Learning to swim
-                  </option>
-                  <option value="Competent swimmer">Competent swimmer</option>
-                </select>
-                <input
-                  type="text"
-                  name="schoolName"
-                  value={form.schoolName}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="School Name"
-                  className="border p-2 w-full"
-                />
-                <input
-                  type="text"
-                  name="friendsOrSiblingsNames"
-                  value={form.friendsOrSiblingsNames}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="Friends or Siblings Names"
-                  className="border p-2 w-full"
-                />
-                <input
-                  type="text"
-                  name="emergencyContact1Name"
-                  value={form.emergencyContact1Name}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="Emergency Contact 1 Name"
-                  className="border p-2 w-full"
-                />
-                <input
-                  type="text"
-                  name="emergencyContact1Phone"
-                  value={form.emergencyContact1Phone}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="Emergency Contact 1 Phone"
-                  className="border p-2 w-full"
-                />
-                <input
-                  type="text"
-                  name="emergencyContact2Name"
-                  value={form.emergencyContact2Name}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="Emergency Contact 2 Name"
-                  className="border p-2 w-full"
-                />
-                <input
-                  type="text"
-                  name="emergencyContact2Phone"
-                  value={form.emergencyContact2Phone}
-                  onChange={(e) => handleChange(index, e)}
-                  placeholder="Emergency Contact 2 Phone"
-                  className="border p-2 w-full"
-                />
-
-                {/* Week and Day selection UI */}
+                <label>
+                  Medical Conditions <span className="text-red-500">*</span>
+                  <textarea
+                    name="medicalConditions"
+                    value={form.medicalConditions}
+                    onChange={(e) => handleChange(index, e)}
+                    placeholder="Medical Conditions"
+                    className="mt-1 p-2 w-full border rounded"
+                  />
+                </label>
+                <label>
+                  Swimming Ability <span className="text-red-500">*</span>
+                  <select
+                    name="swimmingAbility"
+                    value={form.swimmingAbility}
+                    onChange={(e) => handleChange(index, e)}
+                    className="mt-1 p-2 w-full border rounded"
+                  >
+                    <option value="">Select Swimming Ability</option>
+                    <option value="Non-swimmer">Non-swimmer</option>
+                    <option value="Learning to swim">Learning to swim</option>
+                    <option value="Competent swimmer">Competent swimmer</option>
+                  </select>
+                </label>
+                <label>
+                  School Name <span className="text-red-500">*</span>
+                  <input
+                    type="text"
+                    name="schoolName"
+                    value={form.schoolName}
+                    onChange={(e) => handleChange(index, e)}
+                    placeholder="School Name"
+                    className="mt-1 p-2 w-full border rounded"
+                  />
+                </label>
+                <label>
+                  Friends or Siblings Names{" "}
+                  <span className="text-red-500">*</span>
+                  <input
+                    type="text"
+                    name="friendsOrSiblingsNames"
+                    value={form.friendsOrSiblingsNames}
+                    onChange={(e) => handleChange(index, e)}
+                    placeholder="Friends or Siblings Names"
+                    className="mt-1 p-2 w-full border rounded"
+                  />
+                </label>
                 <div className="mt-4">
                   <label className="block font-bold mb-1">
                     <input
@@ -339,7 +376,7 @@ export default function Register() {
                     <label className="block font-bold mb-1">
                       <input
                         type="checkbox"
-                        name={`week${i}`} // Unique name for week
+                        name={`week${i}`}
                         checked={form.weeks.selectedWeeks[i]}
                         onChange={(e) => handleWeeksChange(index, i, e)}
                       />{" "}
@@ -360,7 +397,7 @@ export default function Register() {
                         <label key={day} className="inline-block font-bold">
                           <input
                             type="checkbox"
-                            name={`day${i}${day}`} // Unique name for each day
+                            name={`day${i}${day}`}
                             value={day}
                             checked={form.weeks.daysOfWeek[i].includes(day)}
                             onChange={(e) =>
@@ -377,12 +414,108 @@ export default function Register() {
               </div>
             </div>
           ))}
-          {/* <button
-            type="submit"
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full mt-4"
-          >
-            Submit All Registrations
-          </button> */}
+
+          <div className="mt-4 p-4 border rounded">
+            <h2 className="text-lg font-semibold mb-2">Order Details</h2>
+            <label>
+              Email <span className="text-red-500">*</span>
+              <input
+                type="email"
+                name="email"
+                value={orderDetails.email}
+                onChange={handleOrderDetailsChange}
+                placeholder="Enter your email"
+                className="mt-1 mb-3 p-2 w-full border rounded"
+              />
+            </label>
+            <label>
+              Emergency Contact 1 Name <span className="text-red-500">*</span>
+              <input
+                type="text"
+                name="emergencyContact1Name"
+                value={orderDetails.emergencyContact1Name}
+                onChange={handleOrderDetailsChange}
+                placeholder="Enter first emergency contact name"
+                className="mb-3 p-2 w-full border rounded"
+              />
+            </label>
+            <label>
+              Emergency Contact 1 Phone <span className="text-red-500">*</span>
+              <input
+                type="text"
+                name="emergencyContact1Phone"
+                value={orderDetails.emergencyContact1Phone}
+                onChange={handleOrderDetailsChange}
+                placeholder="Enter first emergency contact phone (with country code)"
+                className="mb-3 p-2 w-full border rounded"
+              />
+            </label>
+            <label>
+              Emergency Contact 2 Name <span className="text-red-500">*</span>
+              <input
+                type="text"
+                name="emergencyContact2Name"
+                value={orderDetails.emergencyContact2Name}
+                onChange={handleOrderDetailsChange}
+                placeholder="Enter second emergency contact name"
+                className="mb-3 p-2 w-full border rounded"
+              />
+            </label>
+            <label>
+              Emergency Contact 2 Phone <span className="text-red-500">*</span>
+              <input
+                type="text"
+                name="emergencyContact2Phone"
+                value={orderDetails.emergencyContact2Phone}
+                onChange={handleOrderDetailsChange}
+                placeholder="Enter second emergency contact phone"
+                className="mb-1 p-2 w-full border rounded"
+              />
+            </label>
+            <label className="block font-medium my-4">
+              <input
+                type="checkbox"
+                name="termsAndConditions"
+                checked={orderDetails.termsAndConditions}
+                onChange={handleOrderDetailsChange}
+              />{" "}
+              I have read, understood and agree to the{" "}
+              <a
+                href="https://ecov.co/holidaycamp/tandc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                terms and conditions
+              </a>{" "}
+              <span className="text-red-500">*</span>
+            </label>
+            <label className="block font-medium">
+              <input
+                type="checkbox"
+                name="orderConfirmation"
+                checked={orderDetails.orderConfirmation}
+                onChange={handleOrderDetailsChange}
+              />{" "}
+              I understand that payment must be made within 3 hours of
+              submitting the registration, otherwise the booking will be
+              automatically cancelled by the system.{" "}
+              <span className="text-red-500">*</span>
+            </label>
+            <br></br>
+            <label className="block font-medium">
+              <input
+                type="checkbox"
+                name="bookingConfirmation"
+                checked={orderDetails.bookingConfirmation}
+                onChange={handleOrderDetailsChange}
+              />{" "}
+              You should receive a booking confirmation email automatically
+              after completing registration and payment. If you haven't received
+              this within 24hrs, please let us know.{" "}
+              <span className="text-red-500">*</span>
+            </label>
+          </div>
         </form>
       </div>
       <div className="w-1/4 sticky top-0 h-screen flex flex-col py-4 px-8 bg-gray-100 overflow-y-auto">
@@ -390,8 +523,7 @@ export default function Register() {
           src="https://cdn.strawberrylabs.net/strawberrylabs/ecoventure-main-logo.webp"
           alt="Company Logo"
           className="w-3/4 mt-4 mb-4"
-        />{" "}
-        {/* Logo at the top of the sidebar */}
+        />
         <div className="mt-4">
           <h3 className="text-lg font-bold mb-2">Price Breakdown</h3>
           {forms.map((form, index) => (
@@ -415,7 +547,6 @@ export default function Register() {
             Total Price: AED{" "}
             {forms.reduce((total, form) => total + form.priceDetails.price, 0)}
           </p>
-
           <button
             onClick={handleSubmit}
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full mt-4"
