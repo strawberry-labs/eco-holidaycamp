@@ -1,10 +1,22 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import CryptoJS from "crypto-js";
 
 export default function Register() {
   const router = useRouter();
   const { quantity, type } = router.query;
   const [forms, setForms] = useState([]);
+
+  const generateGUID = () => {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (Math.random() * 16) | 0,
+          v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+  };
 
   useEffect(() => {
     // Initialize forms with default values
@@ -120,10 +132,33 @@ export default function Register() {
     setForms(updatedForms);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
     console.log("All form data submitted:", forms);
-    // Implement the server submission or further processing here
+
+    const orderAmount = forms.reduce(
+      (total, form) => total + form.priceDetails.price,
+      0
+    );
+
+    const response = await fetch("/api/submitOrder", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderAmount,
+      }),
+    });
+
+    if (response.ok) {
+      const { redirect_url } = await response.json();
+      window.location.href = redirect_url;
+    } else {
+      const { error } = await response.json();
+      alert("Error: " + error);
+    }
   };
 
   return (
@@ -208,8 +243,7 @@ export default function Register() {
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                 </select>
-                <input
-                  type="text"
+                <textarea
                   name="medicalConditions"
                   value={form.medicalConditions}
                   onChange={(e) => handleChange(index, e)}
@@ -343,12 +377,12 @@ export default function Register() {
               </div>
             </div>
           ))}
-          <button
+          {/* <button
             type="submit"
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full mt-4"
           >
             Submit All Registrations
-          </button>
+          </button> */}
         </form>
       </div>
       <div className="w-1/4 sticky top-0 h-screen flex flex-col py-4 px-8 bg-gray-100 overflow-y-auto">
