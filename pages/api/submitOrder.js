@@ -96,6 +96,7 @@ export default async function handler(req, res) {
           // Send redirect URL back to client
           res.status(200).json({ redirect_url: jsonResponse.redirect_url });
         } else {
+          console.log(res.json());
           res
             .status(apiResponse.status)
             .json({ error: "Failed to process payment" });
