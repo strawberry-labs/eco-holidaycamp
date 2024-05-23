@@ -52,7 +52,7 @@ export default function HomePage() {
               <option value="">Select a location</option>
               <option value="dubai">Kings School Dubai</option>
               <option value="barsha">Kings Al Barsha</option>
-              <option value="nadalsheba">Kings School Nad Al Sheba</option>
+              {/* <option value="nadalsheba">Kings School Nad Al Sheba</option> */}
             </select>
           </div>
           <button

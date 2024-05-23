@@ -53,9 +53,20 @@
       <h1>Booking Confirmation</h1>
       <p>
         Your booking with order number - <strong>{{order_id}}</strong> has been
-        successfully confirmed. Here are the details of your booking:
+        successfully confirmed for Holiday Camp at
+        <strong>{{location}}</strong>. Here are the details of your booking:
       </p>
       <div>{{attendeesDetails}}</div>
+      <h3>Camp Location</h3>
+      <iframe
+        src="{{embed_link}}"
+        width="400"
+        height="300"
+        style="border: 0"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
     </div>
   </body>
 </html>

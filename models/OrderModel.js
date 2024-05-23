@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import "./AttendeeModel";
 
 const orderSchema = new mongoose.Schema({
+  location: String,
   email: String,
   emergencyContact1Name: String,
   emergencyContact1Phone: String,

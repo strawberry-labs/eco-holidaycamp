@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import FullScreenLoader from "../components/FullScreenLoader";
 
 export default function Register() {
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { quantity, type } = router.query;
   const [forms, setForms] = useState([]);
   const [orderDetails, setOrderDetails] = useState({
+    location: "Kings Al Barsha",
     email: "",
     emergencyContact1Name: "",
     emergencyContact1Phone: "",
@@ -23,8 +26,8 @@ export default function Register() {
         lastName: "",
         dateOfBirth: "",
         ageGroup: "",
-        toiletTrained: false,
-        attendedOneTerm: false,
+        toiletTrained: true,
+        attendedOneTerm: true,
         gender: "",
         program: type || "",
         medicalConditions: "",
@@ -142,14 +145,56 @@ export default function Register() {
         form.ageGroup &&
         form.gender &&
         form.medicalConditions &&
-        form.swimmingAbility &&
         form.schoolName &&
         form.activitySelection &&
         form.weeks.selectedWeeks.some(Boolean)
       );
     });
+
+    console.log("isValidEmail:", isValidEmail);
+    console.log(
+      "Emergency Contact 1 Name:",
+      orderDetails.emergencyContact1Name,
+      "Length:",
+      orderDetails.emergencyContact1Name.length
+    );
+    console.log(
+      "Emergency Contact 1 Phone:",
+      orderDetails.emergencyContact1Phone,
+      "Length:",
+      orderDetails.emergencyContact1Phone.length
+    );
+    console.log(
+      "Emergency Contact 2 Name:",
+      orderDetails.emergencyContact2Name,
+      "Length:",
+      orderDetails.emergencyContact2Name.length
+    );
+    console.log(
+      "Emergency Contact 2 Phone:",
+      orderDetails.emergencyContact2Phone,
+      "Length:",
+      orderDetails.emergencyContact2Phone.length
+    );
+    // console.log("isValidPhone1:", isValidPhone1);
+    // console.log("isValidPhone2:", isValidPhone2);
+    console.log("hasAllRequiredFields:", hasAllRequiredFields);
+    console.log(
+      "Terms And Conditions Accepted:",
+      orderDetails.termsAndConditions
+    );
+    console.log("Order Confirmation Received:", orderDetails.orderConfirmation);
+    console.log(
+      "Booking Confirmation Received:",
+      orderDetails.bookingConfirmation
+    );
+
     return (
       isValidEmail &&
+      orderDetails.emergencyContact1Name.length > 0 &&
+      orderDetails.emergencyContact1Phone.length > 0 &&
+      orderDetails.emergencyContact2Name.length > 0 &&
+      orderDetails.emergencyContact2Phone.length > 0 &&
       // isValidPhone1 &&
       // isValidPhone2 &&
       hasAllRequiredFields &&
@@ -161,33 +206,41 @@ export default function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     console.log("Order Details:", orderDetails);
     console.log("Attendee Details:", forms);
     if (validateForm()) {
-      const orderAmount = forms.reduce(
-        (total, form) => total + form.priceDetails.price,
-        0
-      );
-      console.log("Total Order Amount:", orderAmount);
+      setLoading(true); // Show loader
+      try {
+        const orderAmount = forms.reduce(
+          (total, form) => total + form.priceDetails.price,
+          0
+        );
+        console.log("Total Order Amount:", orderAmount);
 
-      const response = await fetch("/api/submitOrder", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          orderAmount,
-          orderDetails,
-          forms,
-        }),
-      });
+        const response = await fetch("/api/submitOrder", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            orderAmount,
+            orderDetails,
+            forms,
+          }),
+        });
 
-      if (response.ok) {
-        const { redirect_url } = await response.json();
-        window.location.href = redirect_url;
-      } else {
-        const { error } = await response.json();
-        alert("Error: " + error);
+        if (response.ok) {
+          const { redirect_url } = await response.json();
+          window.location.href = redirect_url;
+        } else {
+          const { error } = await response.json();
+          alert("Error: " + error);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false); // Hide loader
       }
     } else {
       alert(
@@ -198,6 +251,7 @@ export default function Register() {
 
   return (
     <div className="flex min-h-screen bg-white text-black">
+      {loading && <FullScreenLoader />}
       <div className="flex-grow w-3/4 p-8 overflow-auto">
         <h1 className="text-3xl font-bold mb-6">Register/Purchase Tickets</h1>
         <form onSubmit={handleSubmit}>
@@ -217,6 +271,7 @@ export default function Register() {
                     placeholder="First Name"
                     className="mt-1 p-2 w-full border rounded"
                   />
+                  <p className="text-xs">{`Atendee is the person who will attend the Summer Camp.`}</p>
                 </label>
                 <label>
                   Last Name <span className="text-red-500">*</span>
@@ -270,42 +325,48 @@ export default function Register() {
                   </select>
                 </label>
                 <label>
-                  Activity <span className="text-red-500">*</span>
+                  Program <span className="text-red-500">*</span>
                   <select
                     name="activitySelection"
                     value={form.activitySelection}
                     onChange={(e) => handleChange(index, e)}
                     className="mt-1 p-2 w-full border rounded"
                   >
-                    <option value="">Select Activity</option>
+                    <option value="">Select Program</option>
                     <option value="Multi Activity">Multi Activity</option>
                     <option value="ETB + Multi Activity">
                       ETB + Multi Activity
                     </option>
                   </select>
+                  <p className="text-xs mt-1">{`Multi - Activity includes sports, swimming, arts and crafts, baking, and specialist activities such as karate and climbing. || ETB + Multi Activity includes 2 classroom engineering sessions and 2 multi activity sessions each day.`}</p>
                 </label>
+                {(form.ageGroup === "3" || form.ageGroup === "4") && (
+                  <>
+                    <label>
+                      Toilet Trained <span className="text-red-500">*</span>
+                      <input
+                        type="checkbox"
+                        name="toiletTrained"
+                        checked={form.toiletTrained}
+                        onChange={(e) => handleChange(index, e)}
+                        className="ml-2"
+                      />
+                    </label>
+                    <label>
+                      Attended One Term <span className="text-red-500">*</span>
+                      <input
+                        type="checkbox"
+                        name="attendedOneTerm"
+                        checked={form.attendedOneTerm}
+                        onChange={(e) => handleChange(index, e)}
+                        className="ml-2"
+                      />
+                    </label>
+                  </>
+                )}
                 <label>
-                  Toilet Trained <span className="text-red-500">*</span>
-                  <input
-                    type="checkbox"
-                    name="toiletTrained"
-                    checked={form.toiletTrained}
-                    onChange={(e) => handleChange(index, e)}
-                    className="ml-2"
-                  />
-                </label>
-                <label>
-                  Attended One Term <span className="text-red-500">*</span>
-                  <input
-                    type="checkbox"
-                    name="attendedOneTerm"
-                    checked={form.attendedOneTerm}
-                    onChange={(e) => handleChange(index, e)}
-                    className="ml-2"
-                  />
-                </label>
-                <label>
-                  Medical Conditions <span className="text-red-500">*</span>
+                  Does the participant have any pre-existing medical conditions?{" "}
+                  <span className="text-red-500">*</span>
                   <textarea
                     name="medicalConditions"
                     value={form.medicalConditions}
@@ -313,8 +374,9 @@ export default function Register() {
                     placeholder="Medical Conditions"
                     className="mt-1 p-2 w-full border rounded"
                   />
+                  <p className="text-xs">{`Please tell us about any medical information that might impact your adventure. (E.g. physical injuries, allergies, illnesses, SEN requirements, etc.)`}</p>
                 </label>
-                <label>
+                {/* <label>
                   Swimming Ability <span className="text-red-500">*</span>
                   <select
                     name="swimmingAbility"
@@ -327,9 +389,10 @@ export default function Register() {
                     <option value="Learning to swim">Learning to swim</option>
                     <option value="Competent swimmer">Competent swimmer</option>
                   </select>
-                </label>
+                </label> */}
                 <label>
-                  School Name <span className="text-red-500">*</span>
+                  What school does your child attend?{" "}
+                  <span className="text-red-500">*</span>
                   <input
                     type="text"
                     name="schoolName"
@@ -338,9 +401,11 @@ export default function Register() {
                     placeholder="School Name"
                     className="mt-1 p-2 w-full border rounded"
                   />
+                  <p className="text-xs">{`Please note that this does not have to be a Kings' School. All children are welcome.`}</p>
                 </label>
                 <label>
-                  Friends or Siblings Names{" "}
+                  Please provide the names of friends or siblings who you would
+                  like to be grouped together.{" "}
                   <span className="text-red-500">*</span>
                   <input
                     type="text"
@@ -350,6 +415,7 @@ export default function Register() {
                     placeholder="Friends or Siblings Names"
                     className="mt-1 p-2 w-full border rounded"
                   />
+                  <p className="text-xs">{`IMPORTANT - We will do our best to group friends / siblings together. However, in the interest of safety we aim to not have more than a two year age difference within a group.`}</p>
                 </label>
                 <div className="mt-4">
                   <label className="block font-bold mb-1">
@@ -436,7 +502,7 @@ export default function Register() {
                 name="emergencyContact1Name"
                 value={orderDetails.emergencyContact1Name}
                 onChange={handleOrderDetailsChange}
-                placeholder="Enter first emergency contact name"
+                placeholder="Enter Name of first Parent / Guardian"
                 className="mb-3 p-2 w-full border rounded"
               />
             </label>
@@ -447,7 +513,7 @@ export default function Register() {
                 name="emergencyContact1Phone"
                 value={orderDetails.emergencyContact1Phone}
                 onChange={handleOrderDetailsChange}
-                placeholder="Enter first emergency contact phone (with country code)"
+                placeholder="Enter Contact of first Parent / Guardian (with country code)"
                 className="mb-3 p-2 w-full border rounded"
               />
             </label>
@@ -458,7 +524,7 @@ export default function Register() {
                 name="emergencyContact2Name"
                 value={orderDetails.emergencyContact2Name}
                 onChange={handleOrderDetailsChange}
-                placeholder="Enter second emergency contact name"
+                placeholder="Enter Name of second Parent / Guardian"
                 className="mb-3 p-2 w-full border rounded"
               />
             </label>
@@ -469,7 +535,7 @@ export default function Register() {
                 name="emergencyContact2Phone"
                 value={orderDetails.emergencyContact2Phone}
                 onChange={handleOrderDetailsChange}
-                placeholder="Enter second emergency contact phone"
+                placeholder="Enter Contact of second Parent / Guardian (with country code)"
                 className="mb-1 p-2 w-full border rounded"
               />
             </label>
