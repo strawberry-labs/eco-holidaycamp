@@ -112,6 +112,9 @@ export default async function handler(req, res) {
       res.status(405).json({ error: "Method Not Allowed" });
     }
   } catch (error) {
-    console.log(`Error in callback - ${error}`);
+    let aux = error.stack.split("\n");
+    aux.splice(0, 2); //removing the line that we force to generate the error (var err = new Error();) from the message
+    aux = aux.join('\n"');
+    console.log(`Error in callback - ${error}\n${aux}`);
   }
 }
