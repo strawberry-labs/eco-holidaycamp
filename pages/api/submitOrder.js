@@ -63,7 +63,7 @@ export default async function handler(req, res) {
           email: orderDetails.email,
         },
         billing_address: {
-          country: "UAE",
+          country: "AE",
           state: "Dubai",
           city: "Dubai",
           address: "Dubai",
