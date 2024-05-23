@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import "./AttendeeModel";
 
 const orderSchema = new mongoose.Schema({
   email: String,
