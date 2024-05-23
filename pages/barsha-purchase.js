@@ -20,6 +20,11 @@ export default function Register() {
   });
 
   useEffect(() => {
+    const img = new Image();
+    img.src = "/loader.png"; // Path to your loader image
+  }, []);
+
+  useEffect(() => {
     setForms(
       Array.from({ length: parseInt(quantity || "1") }, () => ({
         firstName: "",
