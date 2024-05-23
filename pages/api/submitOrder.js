@@ -2,6 +2,7 @@ import CryptoJS from "crypto-js";
 import dbConnect from "../../utils/dbConnect"; // Ensure this utility is correctly set up
 import Order from "../../models/OrderModel"; // Include the Order model
 import Attendee from "../../models/AttendeeModel"; // Include the Attendee model
+import { sendBookingPendingEmail } from "../../utils/sendEmail";
 
 export default async function handler(req, res) {
   await dbConnect();
@@ -87,6 +88,11 @@ export default async function handler(req, res) {
 
         if (apiResponse.ok) {
           const jsonResponse = await apiResponse.json();
+          await sendBookingPendingEmail(
+            orderDetails.email,
+            orderNumber,
+            jsonResponse.redirect_url
+          );
           // Send redirect URL back to client
           res.status(200).json({ redirect_url: jsonResponse.redirect_url });
         } else {
@@ -98,7 +104,10 @@ export default async function handler(req, res) {
         res.status(200).json({ redirect_url: "http://locahost:3000/waitlist" });
       }
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      let aux = error.stack.split("\n");
+      aux.splice(0, 2); //removing the line that we force to generate the error (var err = new Error();) from the message
+      aux = aux.join('\n"');
+      res.status(500).json({ error: error.message, details: aux });
     }
   } else {
     res.setHeader("Allow", ["POST"]);

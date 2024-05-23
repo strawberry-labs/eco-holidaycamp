@@ -496,10 +496,8 @@ export default function Register() {
                 name="orderConfirmation"
                 checked={orderDetails.orderConfirmation}
                 onChange={handleOrderDetailsChange}
-              />{" "}
-              I understand that payment must be made within 3 hours of
-              submitting the registration, otherwise the booking will be
-              automatically cancelled by the system.{" "}
+              />
+              {` I understand that payment must be made within 3 hours of submitting the registration, otherwise the booking will be automatically cancelled by the system. `}
               <span className="text-red-500">*</span>
             </label>
             <br></br>
@@ -509,10 +507,8 @@ export default function Register() {
                 name="bookingConfirmation"
                 checked={orderDetails.bookingConfirmation}
                 onChange={handleOrderDetailsChange}
-              />{" "}
-              You should receive a booking confirmation email automatically
-              after completing registration and payment. If you haven't received
-              this within 24hrs, please let us know.{" "}
+              />
+              {` You should receive a booking confirmation email automatically after completing registration and payment. If you haven't received this within 24hrs, please let us know. `}
               <span className="text-red-500">*</span>
             </label>
           </div>

@@ -34,9 +34,9 @@ export default function HomePage() {
             className="w-full max-w-md mx-auto mb-4"
           />
           <p className="mb-4">
-            We are proud to continue to provide our extremely popular holiday
+            {`We are proud to continue to provide our extremely popular holiday
             programs with Kings' Schools and Engineers to be. These programs run
-            every school holiday and we offer discounts for early registration.
+            every school holiday and we offer discounts for early registration.`}
           </p>
           <img
             src="https://cdn.strawberrylabs.net/strawberrylabs/climbing.webp"
