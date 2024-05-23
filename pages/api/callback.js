@@ -6,9 +6,9 @@ import { sendBookingConfirmationEmail } from "../../utils/sendEmail";
 export default async function handler(req, res) {
   await dbConnect();
   try {
-    console.log(`Callback Body: \n\n${JSON.stringify(req.body)}`);
+    console.log(`Callback Body: \n\n${JSON.stringify(req.body["||mid"])}`);
     if (req.method === "POST") {
-      const callbackData = parseCallbackData(req.body);
+      const callbackData = parseCallbackData(req.body["||mid"]);
 
       const {
         id,
