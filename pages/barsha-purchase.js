@@ -21,7 +21,7 @@ export default function Register() {
 
   useEffect(() => {
     const img = new Image();
-    img.src = "/loader.png"; // Path to your loader image
+    img.src = "/eco-loader.png"; // Path to your loader image
   }, []);
 
   useEffect(() => {
@@ -240,7 +240,11 @@ export default function Register() {
           window.location.href = redirect_url;
         } else {
           const { error } = await response.json();
-          alert("Error: " + error);
+          if (error) {
+            alert("Error: " + error);
+          } else {
+            alert(`Error ${response.status}: ${response.statusText}`);
+          }
         }
       } catch (error) {
         console.log(error);
