@@ -56,19 +56,19 @@ export default async function handler(req, res) {
           currency: orderCurrency,
           description: orderDescription,
         },
-        cancel_url: "http://localhost:3000/cancel",
-        success_url: "http://localhost:3000/success",
+        cancel_url: `${process.env.PUBLIC_BASE_URL}/cancel`,
+        success_url: `${process.env.PUBLIC_BASE_URL}/success`,
         customer: {
-          name: "John Doe",
-          email: "test@email.com",
+          name: orderDetails.emergencyContact1Name,
+          email: orderDetails.email,
         },
         billing_address: {
-          country: "US",
-          state: "CA",
-          city: "Los Angeles",
-          address: "Moor Building 35274",
-          zip: "123456",
-          phone: "347771112233",
+          country: "UAE",
+          state: "Dubai",
+          city: "Dubai",
+          address: "Dubai",
+          zip: "000000",
+          phone: orderDetails.emergencyContact1Phone,
         },
         recurring_init: "true",
         hash: hash,
@@ -101,7 +101,9 @@ export default async function handler(req, res) {
             .json({ error: "Failed to process payment" });
         }
       } else {
-        res.status(200).json({ redirect_url: "http://locahost:3000/waitlist" });
+        res
+          .status(200)
+          .json({ redirect_url: `${process.env.PUBLIC_BASE_URL}/waitlist` });
       }
     } catch (error) {
       let aux = error.stack.split("\n");
