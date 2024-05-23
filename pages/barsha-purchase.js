@@ -98,6 +98,7 @@ export default function Register() {
     }
     updatedForms[index].priceDetails = calculatePrice(updatedForms[index]);
     setForms(updatedForms);
+    console.log(forms);
   };
 
   const calculatePrice = (form) => {

@@ -77,44 +77,35 @@ const getHtmlConfirmationEmailContent = (order) => {
   order.attendees.forEach((attendee, index) => {
     attendeesDetails += `<tr><td colspan="3"><strong>${attendee.firstName} ${attendee.lastName}</strong></td></tr>`;
 
-    if (attendee.weeks.allWeeks) {
-      attendeesDetails += `<tr><td colspan="3">All weeks selected</td></tr>`;
-    } else {
-      attendee.weeks.selectedWeeks.forEach((selected, weekIndex) => {
-        if (selected) {
-          attendeesDetails += `<tr><td colspan="3">Week ${
-            weekIndex + 1
-          }</td></tr>`;
-          attendee.weeks.daysOfWeek[weekIndex].forEach((day) => {
-            attendeesDetails += `<tr><td style="padding-left: 20px;">${day}</td><td></td><td></td></tr>`;
-          });
-        }
+    attendee.priceDetails.details.forEach((weekDetail) => {
+      attendeesDetails += `<tr><td colspan="3">Week: ${weekDetail.week}</td></tr>`;
+      weekDetail.details.forEach((detail) => {
+        attendeesDetails += `<tr><td style="padding-left: 20px;">${
+          detail.description
+        }</td><td style="text-align: right;">$${detail.cost.toFixed(
+          2
+        )}</td></tr>`;
       });
-    }
-
-    attendee.priceDetails.details.forEach((item) => {
-      attendeesDetails += `<tr><td style="padding-left: 40px;">${
-        item.description
-      }</td><td>$${item.cost.toFixed(2)}</td></tr>`;
     });
 
-    attendeesDetails += `<tr><td></td><td style="text-align:right;"><strong>Subtotal:</strong></td><td>$${attendee.priceDetails.price.toFixed(
+    let attendeeTotal = attendee.priceDetails.price;
+    attendeesDetails += `<tr><td></td><td style="text-align: right;"><strong>Subtotal:</strong></td><td style="text-align: right;">$${attendeeTotal.toFixed(
       2
     )}</td></tr>`;
-    totalSum += attendee.priceDetails.price;
+    totalSum += attendeeTotal;
   });
 
-  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Total Price:</strong></td><td>$${totalSum.toFixed(
+  attendeesDetails += `<tr><td colspan="2" style="text-align: right;"><strong>Total Price:</strong></td><td style="text-align: right;">$${totalSum.toFixed(
     2
   )}</td></tr>`;
   attendeesDetails += "</table>";
 
   htmlTemplate = htmlTemplate.replace("{{order_id}}", order._id.toString());
   htmlTemplate = htmlTemplate.replace("{{attendeesDetails}}", attendeesDetails);
+  htmlTemplate = htmlTemplate.replace("{{total}}", totalSum.toFixed(2));
 
   return htmlTemplate;
 };
-
 export const sendBookingConfirmationEmail = async (orderId) => {
   await dbConnect();
   const order = await Order.findById(orderId).populate("attendees");

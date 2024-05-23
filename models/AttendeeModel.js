@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
 
+const detailSchema = new mongoose.Schema({
+  description: String,
+  cost: Number,
+});
+
+const weekDetailSchema = new mongoose.Schema({
+  week: String,
+  details: [detailSchema],
+});
+
 const attendeeSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
@@ -16,7 +26,6 @@ const attendeeSchema = new mongoose.Schema({
   activitySelection: String,
   createdTime: { type: Date, default: Date.now },
   lastModifiedTime: { type: Date, default: Date.now },
-  // Week groups as empty text initially
   week1Group: { type: String, default: "" },
   week2Group: { type: String, default: "" },
   week3Group: { type: String, default: "" },
@@ -30,12 +39,7 @@ const attendeeSchema = new mongoose.Schema({
   },
   priceDetails: {
     price: Number,
-    details: [
-      {
-        description: String,
-        cost: Number,
-      },
-    ],
+    details: [weekDetailSchema],
   },
 });
 
