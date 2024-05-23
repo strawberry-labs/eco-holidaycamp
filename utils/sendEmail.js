@@ -78,27 +78,16 @@ const getHtmlConfirmationEmailContent = (order) => {
     attendeesDetails += `<tr><td colspan="3"><strong>${attendee.firstName} ${attendee.lastName} - ${attendee.program}</strong></td></tr>`;
 
     if (attendee.weeks.allWeeks) {
-      attendeesDetails += `<tr><td>All Weeks Selected</td><td style="text-align: right;">$${attendee.priceDetails.price.toFixed(
+      attendeesDetails += `<tr><td>All Weeks Selected</td><td style="text-align: right;">AED ${attendee.priceDetails.price.toFixed(
         2
       )}</td></tr>`;
     } else {
-      attendee.weeks.selectedWeeks.forEach((selected, weekIndex) => {
-        if (selected) {
-          attendeesDetails += `<tr><td colspan="3">Week ${
-            weekIndex + 1
-          }</td></tr>`;
-          attendee.weeks.daysOfWeek[weekIndex].forEach((day) => {
-            attendeesDetails += `<tr><td style="padding-left: 20px;">${day}</td><td></td><td></td></tr>`;
-          });
-        }
-      });
-
       attendee.priceDetails.details.forEach((weekDetail) => {
         attendeesDetails += `<tr><td colspan="3">${weekDetail.week}</td></tr>`;
         weekDetail.details.forEach((detail) => {
-          attendeesDetails += `<tr><td style="padding-left: 40px;">${
+          attendeesDetails += `<tr><td style="padding-left: 20px;">${
             detail.description
-          }</td><td style="text-align: right;">$${detail.cost.toFixed(
+          }</td><td style="text-align: right;">AED ${detail.cost.toFixed(
             2
           )}</td></tr>`;
         });
@@ -106,13 +95,13 @@ const getHtmlConfirmationEmailContent = (order) => {
     }
 
     let attendeeTotal = attendee.priceDetails.price;
-    attendeesDetails += `<tr><td></td><td style="text-align:right;"><strong>Subtotal:</strong></td><td style="text-align: right;">$${attendeeTotal.toFixed(
+    attendeesDetails += `<tr><td></td><td style="text-align:right;"><strong>Subtotal:</strong></td><td style="text-align: right;">AED ${attendeeTotal.toFixed(
       2
     )}</td></tr>`;
     totalSum += attendeeTotal;
   });
 
-  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Total Price:</strong></td><td style="text-align: right;">$${totalSum.toFixed(
+  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Total Price:</strong></td><td style="text-align: right;">AED ${totalSum.toFixed(
     2
   )}</td></tr>`;
   attendeesDetails += "</table>";
