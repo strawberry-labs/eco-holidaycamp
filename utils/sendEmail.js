@@ -68,24 +68,51 @@ const getHtmlConfirmationEmailContent = (order) => {
     "templates",
     "bookingConfirmationTemplate.html"
   );
-  let htmlContent = fs.readFileSync(filePath, "utf8");
+  let htmlTemplate = fs.readFileSync(filePath, "utf8");
 
-  const attendeesDetails = order.attendees
-    .map(
-      (attendee) =>
-        `${attendee.firstName} ${attendee.lastName}: ${attendee.program}`
-    )
-    .join("<br>");
-  const total = order.attendees.reduce(
-    (sum, attendee) => sum + attendee.priceDetails.price,
-    0
-  );
+  let attendeesDetails =
+    '<table style="width: 100%; border-collapse: collapse;">';
+  let totalSum = 0;
 
-  htmlContent = htmlContent.replace("{{order_id}}", order._id.toString());
-  htmlContent = htmlContent.replace("{{attendeesDetails}}", attendeesDetails);
-  htmlContent = htmlContent.replace("{{total}}", total.toFixed(2));
+  order.attendees.forEach((attendee, index) => {
+    attendeesDetails += `<tr><td colspan="3"><strong>${attendee.firstName} ${attendee.lastName}</strong></td></tr>`;
 
-  return htmlContent;
+    if (attendee.weeks.allWeeks) {
+      attendeesDetails += `<tr><td colspan="3">All weeks selected</td></tr>`;
+    } else {
+      attendee.weeks.selectedWeeks.forEach((selected, weekIndex) => {
+        if (selected) {
+          attendeesDetails += `<tr><td colspan="3">Week ${
+            weekIndex + 1
+          }</td></tr>`;
+          attendee.weeks.daysOfWeek[weekIndex].forEach((day) => {
+            attendeesDetails += `<tr><td style="padding-left: 20px;">${day}</td><td></td><td></td></tr>`;
+          });
+        }
+      });
+    }
+
+    attendee.priceDetails.details.forEach((item) => {
+      attendeesDetails += `<tr><td style="padding-left: 40px;">${
+        item.description
+      }</td><td>$${item.cost.toFixed(2)}</td></tr>`;
+    });
+
+    attendeesDetails += `<tr><td></td><td style="text-align:right;"><strong>Subtotal:</strong></td><td>$${attendee.priceDetails.price.toFixed(
+      2
+    )}</td></tr>`;
+    totalSum += attendee.priceDetails.price;
+  });
+
+  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Total Price:</strong></td><td>$${totalSum.toFixed(
+    2
+  )}</td></tr>`;
+  attendeesDetails += "</table>";
+
+  htmlTemplate = htmlTemplate.replace("{{order_id}}", order._id.toString());
+  htmlTemplate = htmlTemplate.replace("{{attendeesDetails}}", attendeesDetails);
+
+  return htmlTemplate;
 };
 
 export const sendBookingConfirmationEmail = async (orderId) => {

@@ -10,46 +10,35 @@
     />
     <style>
       body {
-        font-family: "CoHeadline", sans-serif; /* Custom font */
+        font-family: "CoHeadline", sans-serif;
         background-color: #f0f0f0;
         margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
+        padding: 20px;
       }
       .email-container {
         background-color: #ffffff;
-        width: 90%;
-        max-width: 600px;
-        margin: 20px;
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        text-align: center;
+        text-align: left;
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px;
+        font-size: 14px;
+        border-bottom: 1px solid #ddd;
       }
       .email-logo img {
-        width: 200px;
-        margin: 20px auto; /* Center and add margin */
-      }
-      .email-header {
-        color: #333;
+        width: 300;
         margin-bottom: 20px;
-      }
-      .email-text {
-        color: #555;
-        font-size: 16px;
-        margin-bottom: 20px;
-      }
-      .email-button {
-        background-color: #4caf50; /* Grass green */
-        color: white;
-        padding: 10px 20px;
-        text-decoration: none;
-        font-size: 16px;
-        border-radius: 5px;
-        display: inline-block;
       }
     </style>
   </head>
@@ -61,13 +50,12 @@
           alt="Ecoventure Logo"
         />
       </div>
-      <h1 class="email-header">Booking Confirmation</h1>
-      <p class="email-text">
-        Your booking with order number - </strong>{{order_id}}</strong> has been successfully
+      <h1>Booking Confirmation</h1>
+      <p>
+        Your booking with order number - {{order_id}} has been successfully
         confirmed. Here are the details of your booking:
       </p>
-      <p class="email-text">{{attendeesDetails}}</p>
-      <p class="email-text"><strong>Total Price: ${{total}}</strong></p>
+      <div>{{attendeesDetails}}</div>
     </div>
   </body>
 </html>
