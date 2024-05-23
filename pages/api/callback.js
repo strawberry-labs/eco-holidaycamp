@@ -8,6 +8,8 @@ export default async function handler(req, res) {
   try {
     console.log(`Callback Body: \n\n${JSON.stringify(req.body)}`);
     if (req.method === "POST") {
+      const callbackData = parseCallbackData(req.body);
+
       const {
         id,
         order_number,
@@ -48,7 +50,7 @@ export default async function handler(req, res) {
         exchange_amount,
         vat_amount,
         hash,
-      } = req.body;
+      } = callbackData;
 
       // Save the full payment response in the payments collection
       const payment = new Payment({
@@ -117,4 +119,17 @@ export default async function handler(req, res) {
     aux = aux.join('\n"');
     console.log(`Error in callback - ${error}\n${aux}`);
   }
+}
+
+function parseCallbackData(callbackString) {
+  const obj = {};
+  // Split the string by "||" to get each key-value pair
+  const pairs = callbackString.split("||");
+  pairs.forEach((pair) => {
+    const [key, value] = pair.split("=");
+    if (key && value) {
+      obj[key.trim()] = value.trim();
+    }
+  });
+  return obj;
 }
