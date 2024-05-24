@@ -42,9 +42,9 @@ export default function HomePage() {
             every school holiday and we offer discounts for early registration.`}
           </p>
           <img
-            src="https://cdn.strawberrylabs.net/strawberrylabs/climbing.webp"
+            src="https://cdn.strawberrylabs.net/strawberrylabs/eco-banner-2.webp"
             alt="Climbing Activity"
-            className="w-full max-w-md mx-auto mb-4"
+            className="w-full max-w-md mx-auto mb-4 rounded drop-shadow"
           />
           <div className="mb-4">
             <select
@@ -53,8 +53,8 @@ export default function HomePage() {
               className="p-2 rounded-md border border-gray-300"
             >
               <option value="">Select a location</option>
-              <option value="dubai">Kings School Dubai</option>
-              <option value="barsha">Kings Al Barsha</option>
+              <option value="dubai">Kings' School Dubai</option>
+              <option value="barsha">Kings' School Al Barsha</option>
               {/* <option value="nadalsheba">Kings School Nad Al Sheba</option> */}
             </select>
           </div>

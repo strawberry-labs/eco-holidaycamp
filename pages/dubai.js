@@ -8,7 +8,7 @@ export default function Home() {
 
   const handleBuyClick = () => {
     router.push({
-      pathname: "/barsha-purchase",
+      pathname: "/dubai-purchase",
       query: { type: "Super Saver Ticket", quantity: selectedQuantity },
     });
   };
@@ -56,17 +56,17 @@ export default function Home() {
             className="mt-20 md:mt-2 text-3xl md:text-4xl font-bold mt-2"
             style={{ color: "#F5B028" }}
           >
-            SUMMER HOLIDAY CAMP AL BARSHA
+            SUMMER HOLIDAY CAMP KINGS' SCHOOL DUBAI
           </h1>
           <br />
           <p>📅 July 8th - August 16th, 2024</p>
-          <p>📍 Kings' School Al Barsha</p>
+          <p>📍 Kings' School Dubai</p>
           <button
             className="w-36 md:w-36 mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             style={{ backgroundColor: "#F5B028" }}
           >
             <a
-              href="https://maps.app.goo.gl/Gux3TMPbAGpHoVKVA"
+              href="https://maps.app.goo.gl/HZygjbZE11oTDXU96"
               target="_blank"
               rel="noopener noreferrer"
               className="w-full h-full flex justify-center items-center text-gray-700"
@@ -81,8 +81,7 @@ export default function Home() {
           <div className="flex flex-col gap-4">
             <div className="flex mt-4 justify-between items-center">
               <p>
-                <strong>{`Super Saver Ticket `}</strong>
-                {/* {`(Offer Valid till 9th June!)`} */}
+                <strong>Super Saver Ticket</strong>
               </p>
               <select
                 value={selectedQuantity}

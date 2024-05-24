@@ -113,7 +113,7 @@ const getHtmlConfirmationEmailContent = (order) => {
 
   console.log(order.location);
   switch (order.location) {
-    case "Kings Al Barsha":
+    case "Kings' School Al Barsha":
       console.log("im inside this case");
       htmlTemplate = htmlTemplate.replace(
         "{{map_link}}",
@@ -124,7 +124,7 @@ const getHtmlConfirmationEmailContent = (order) => {
         `https://cdn.strawberrylabs.net/strawberrylabs/kings-barsha.png`
       );
       break;
-    case "Kings School Dubai":
+    case "Kings' School Dubai":
       htmlTemplate = htmlTemplate.replace(
         "{{map_link}}",
         `https://maps.app.goo.gl/HZygjbZE11oTDXU96`

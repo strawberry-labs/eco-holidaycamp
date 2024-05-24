@@ -586,7 +586,7 @@ export default function Register() {
           {/* Scrollable Container for Price Breakdown */}
           <div className="overflow-y-auto flex-grow mt-20">
             <h3 className="text-lg font-bold mb-2">Price Breakdown</h3>
-            <h3 className="font-bold my-2">{`Location: Kings' School Al Barsha`}</h3>
+            <h3 className="font-bold my-2">{`Location: Kings' School Dubai`}</h3>
             {forms.map((form, index) => (
               <div key={index} className="mb-4">
                 <h4 className="font-bold">Attendee {index + 1}:</h4>
@@ -652,7 +652,7 @@ export default function Register() {
                 &times;
               </button>
             </div>
-            <h3 className="font-bold my-2">{`Location: Kings' School Al Barsha`}</h3>
+            <h3 className="font-bold my-2">{`Location: Kings' School Dubai`}</h3>
             {forms.map((form, index) => (
               <div key={index} className="mb-4">
                 <h4 className="font-bold">Attendee {index + 1}:</h4>
