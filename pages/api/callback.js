@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     console.log(`Callback Body: \n\n${JSON.stringify(req.body)}`);
 
     if (req.method === "POST") {
-      const callbackData = parseCallbackData(req.body["||mid"]);
+      const callbackData = req.body;
 
       const {
         id,
@@ -144,18 +144,18 @@ export default async function handler(req, res) {
   }
 }
 
-function parseCallbackData(callbackString) {
-  const obj = {};
-  // Split the string by "||" to get each key-value pair
-  const pairs = callbackString.split("||");
-  pairs.forEach((pair) => {
-    const [key, value] = pair.split("=");
-    if (key && value) {
-      obj[key.trim()] = value.trim();
-    }
-  });
-  return obj;
-}
+// function parseCallbackData(callbackString) {
+//   const obj = {};
+//   // Split the string by "||" to get each key-value pair
+//   const pairs = callbackString.split("||");
+//   pairs.forEach((pair) => {
+//     const [key, value] = pair.split("=");
+//     if (key && value) {
+//       obj[key.trim()] = value.trim();
+//     }
+//   });
+//   return obj;
+// }
 
 function verifyHash(data) {
   const stringToHash = `${data.id}${data.order_number}${data.order_amount}${data.order_currency}${data.order_description}${process.env.TOTALPAY_SECRET}`;
