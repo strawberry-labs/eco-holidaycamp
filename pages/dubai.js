@@ -81,7 +81,8 @@ export default function Home() {
           <div className="flex flex-col gap-4">
             <div className="flex mt-4 justify-between items-center">
               <p>
-                <strong>Super Saver Ticket</strong>
+                <strong>{`Super Saver Ticket `}</strong>
+                {`(Offer Valid till 9th June!)`}
               </p>
               <select
                 value={selectedQuantity}
