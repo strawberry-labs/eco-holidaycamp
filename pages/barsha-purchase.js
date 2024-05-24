@@ -305,6 +305,9 @@ export default function Register() {
                     placeholder="First Name"
                     className="mt-1 p-2 w-full border rounded"
                   />
+                  <p className="text-xs mt-2">
+                    Participant is the person who will attend the Summer Camp.
+                  </p>
                 </label>
                 <label>
                   Last Name <span className="text-red-500">*</span>
@@ -328,7 +331,7 @@ export default function Register() {
                   />
                 </label>
                 <label>
-                  Age Group <span className="text-red-500">*</span>
+                  How old is your child? <span className="text-red-500">*</span>
                   <select
                     name="ageGroup"
                     value={form.ageGroup}
@@ -358,7 +361,7 @@ export default function Register() {
                   </select>
                 </label>
                 <label>
-                  Program <span className="text-red-500">*</span>
+                  Select your Program <span className="text-red-500">*</span>
                   <select
                     name="activitySelection"
                     value={form.activitySelection}
@@ -371,6 +374,9 @@ export default function Register() {
                       ETB + Multi Activity
                     </option>
                   </select>
+                  <p className="text-xs mt-2">
+                    {`Multi - Activity includes sports, swimming, arts and crafts, baking, and specialist activities such as karate and climbing. || ETB + Multi Activity includes 2 classroom engineering sessions and 2 multi activity sessions each day.`}
+                  </p>
                 </label>
                 {(form.ageGroup === "3" || form.ageGroup === "4") && (
                   <>
@@ -406,6 +412,9 @@ export default function Register() {
                     placeholder="Medical Conditions"
                     className="mt-1 p-2 w-full border rounded"
                   />
+                  <p className="text-xs mt-2">
+                    {`Please tell us about any medical information that might impact your adventure. (E.g. physical injuries, allergies, illnesses, SEN requirements, etc.)`}
+                  </p>
                 </label>
                 <label>
                   What school does your child attend?{" "}
@@ -418,6 +427,9 @@ export default function Register() {
                     placeholder="School Name"
                     className="mt-1 p-2 w-full border rounded"
                   />
+                  <p className="text-xs mt-2">
+                    {`Please note that this does not have to be a Kings' School. All children are welcome.`}
+                  </p>
                 </label>
                 <label>
                   Please provide the names of friends or siblings who you would
@@ -431,6 +443,9 @@ export default function Register() {
                     placeholder="Friends or Siblings Names"
                     className="mt-1 p-2 w-full border rounded"
                   />
+                  <p className="text-xs mt-2">
+                    {`IMPORTANT - We will do our best to group friends / siblings together. However, in the interest of safety we aim to not have more than a two year age difference within a group.`}
+                  </p>
                 </label>
                 <div className="mt-4">
                   <label className="block font-bold mb-1">
@@ -476,7 +491,10 @@ export default function Register() {
                         "Thursday",
                         "Friday",
                       ].map((day) => (
-                        <label key={day} className="inline-block font-bold">
+                        <label
+                          key={day}
+                          className="inline-block text-[0.65rem] md:text-base md:font-bold"
+                        >
                           <input
                             type="checkbox"
                             name={`day${i}${day}`}
