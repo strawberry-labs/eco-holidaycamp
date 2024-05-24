@@ -55,7 +55,7 @@ export default function Register() {
 
   const emailRegex =
     /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g;
-  const phoneRegex = /^\d{8}$/;
+  const phoneRegex = /\+?\d+/;
 
   const handleChange = (index, event) => {
     const { name, value, type, checked } = event.target;
@@ -152,8 +152,13 @@ export default function Register() {
 
   const validateForm = () => {
     const isValidEmail = emailRegex.test(orderDetails.email);
-    // const isValidPhone1 = phoneRegex.test(orderDetails.emergencyContact1Phone);
-    // const isValidPhone2 = phoneRegex.test(orderDetails.emergencyContact2Phone);
+    const isValidContact1 = phoneRegex.test(
+      orderDetails.emergencyContact1Phone
+    );
+    const isValidContact2 = phoneRegex.test(
+      orderDetails.emergencyContact2Phone
+    );
+
     const hasAllRequiredFields = forms.every((form) => {
       return (
         form.firstName &&
@@ -168,52 +173,12 @@ export default function Register() {
       );
     });
 
-    console.log("isValidEmail:", isValidEmail);
-    console.log(
-      "Emergency Contact 1 Name:",
-      orderDetails.emergencyContact1Name,
-      "Length:",
-      orderDetails.emergencyContact1Name.length
-    );
-    console.log(
-      "Emergency Contact 1 Phone:",
-      orderDetails.emergencyContact1Phone,
-      "Length:",
-      orderDetails.emergencyContact1Phone.length
-    );
-    console.log(
-      "Emergency Contact 2 Name:",
-      orderDetails.emergencyContact2Name,
-      "Length:",
-      orderDetails.emergencyContact2Name.length
-    );
-    console.log(
-      "Emergency Contact 2 Phone:",
-      orderDetails.emergencyContact2Phone,
-      "Length:",
-      orderDetails.emergencyContact2Phone.length
-    );
-    // console.log("isValidPhone1:", isValidPhone1);
-    // console.log("isValidPhone2:", isValidPhone2);
-    console.log("hasAllRequiredFields:", hasAllRequiredFields);
-    console.log(
-      "Terms And Conditions Accepted:",
-      orderDetails.termsAndConditions
-    );
-    console.log("Order Confirmation Received:", orderDetails.orderConfirmation);
-    console.log(
-      "Booking Confirmation Received:",
-      orderDetails.bookingConfirmation
-    );
-
     return (
       isValidEmail &&
       orderDetails.emergencyContact1Name.length > 0 &&
-      orderDetails.emergencyContact1Phone.length > 0 &&
+      isValidContact1 &&
       orderDetails.emergencyContact2Name.length > 0 &&
-      orderDetails.emergencyContact2Phone.length > 0 &&
-      // isValidPhone1 &&
-      // isValidPhone2 &&
+      isValidContact2 &&
       hasAllRequiredFields &&
       orderDetails.termsAndConditions &&
       orderDetails.orderConfirmation &&
@@ -224,8 +189,6 @@ export default function Register() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log("Order Details:", orderDetails);
-    console.log("Attendee Details:", forms);
     if (validateForm()) {
       setLoading(true); // Show loader
       try {
@@ -233,7 +196,6 @@ export default function Register() {
           (total, form) => total + form.priceDetails.price,
           0
         );
-        console.log("Total Order Amount:", orderAmount);
 
         const response = await fetch("/api/submitOrder", {
           method: "POST",
@@ -671,7 +633,19 @@ export default function Register() {
           </button>
         </div>
         {isPriceExpanded && (
-          <div className="mt-4">
+          <div
+            className="fixed inset-0 bg-white p-4 overflow-y-auto z-20"
+            style={{ top: "4rem", bottom: "8rem" }}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-lg font-bold mt-2">Price Breakdown</h3>
+              <button
+                onClick={() => setIsPriceExpanded(false)}
+                className="text-red-500 font-bold text-lg"
+              >
+                &times;
+              </button>
+            </div>
             {forms.map((form, index) => (
               <div key={index} className="mb-4">
                 <h4 className="font-bold">Attendee {index + 1}:</h4>
@@ -691,6 +665,7 @@ export default function Register() {
             ))}
           </div>
         )}
+        {/* Keep the Proceed to Payment button in the sticky bottom panel */}
         <button
           onClick={handleSubmit}
           className="bg-yellow-500 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded w-full mt-4"

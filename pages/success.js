@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function SuccessPage() {
   const router = useRouter();
-  const { order_id } = router.query;
+  const { order_id, orderId } = router.query;
 
   const defaultOptions = {
     loop: true,
@@ -39,7 +39,9 @@ export default function SuccessPage() {
             You have successfully paid for your order. A confirmation will be
             sent to your email as well.
           </p>
-          <p className="font-bold mt-4">Order ID: {order_id}</p>
+          <p className="font-bold mt-4">
+            Order ID: {order_id ? order_id : orderId}
+          </p>
           <button
             onClick={() => router.push("/")}
             className="mt-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded"

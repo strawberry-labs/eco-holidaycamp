@@ -57,7 +57,7 @@ export default async function handler(req, res) {
           description: orderDescription,
         },
         cancel_url: `${process.env.PUBLIC_BASE_URL}/cancel`,
-        success_url: `${process.env.PUBLIC_BASE_URL}/success`,
+        success_url: `${process.env.PUBLIC_BASE_URL}/success?orderId=${orderNumber}`,
         customer: {
           name: orderDetails.emergencyContact1Name,
           email: orderDetails.email,
