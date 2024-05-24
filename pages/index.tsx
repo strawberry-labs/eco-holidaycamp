@@ -53,8 +53,8 @@ export default function HomePage() {
               className="p-2 rounded-md border border-gray-300"
             >
               <option value="">Select a location</option>
-              <option value="dubai">Kings' School Dubai</option>
-              <option value="barsha">Kings' School Al Barsha</option>
+              <option value="dubai">{`Kings' School Dubai`}</option>
+              <option value="barsha">{`Kings' School Al Barsha`}</option>
               {/* <option value="nadalsheba">Kings School Nad Al Sheba</option> */}
             </select>
           </div>

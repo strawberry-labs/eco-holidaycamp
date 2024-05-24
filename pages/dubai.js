@@ -56,11 +56,11 @@ export default function Home() {
             className="mt-20 md:mt-2 text-3xl md:text-4xl font-bold mt-2"
             style={{ color: "#F5B028" }}
           >
-            SUMMER HOLIDAY CAMP KINGS' SCHOOL DUBAI
+            {`SUMMER HOLIDAY CAMP KINGS' SCHOOL DUBAI`}
           </h1>
           <br />
           <p>📅 July 8th - August 16th, 2024</p>
-          <p>📍 Kings' School Dubai</p>
+          <p>{`📍 Kings' School Dubai`}</p>
           <button
             className="w-36 md:w-36 mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             style={{ backgroundColor: "#F5B028" }}
