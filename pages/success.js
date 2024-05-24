@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import Lottie from "react-lottie";
 import successAnimation from "../public/success.json"; // Adjust the path if your public directory is structured differently
+import Link from "next/link";
 
 export default function SuccessPage() {
   const router = useRouter();
@@ -19,13 +20,13 @@ export default function SuccessPage() {
     <div className="bg-gray-100 h-screen text-black">
       <div className="bg-white p-6 shadow-md fixed top-0 left-0 right-0 z-10">
         <div className="max-w-7xl mx-auto flex justify-center">
-          <a href="/">
+          <Link href="/">
             <img
               src="https://cdn.strawberrylabs.net/strawberrylabs/ecoventure-main-logo.webp"
               alt="Ecoventure Logo"
               className="h-6"
             />
-          </a>
+          </Link>
         </div>
       </div>
       <div className="flex flex-col items-center mt-16 md:mt-0 md:justify-center h-full pt-16">

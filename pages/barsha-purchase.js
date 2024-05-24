@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import FullScreenLoader from "../components/FullScreenLoader";
+import Link from "next/link";
 
 export default function Register() {
   const [loading, setLoading] = useState(false);
@@ -274,13 +275,13 @@ export default function Register() {
       {loading && <FullScreenLoader />}
       <div className="bg-white p-6 shadow-md fixed top-0 left-0 right-0 z-10">
         <div className="max-w-7xl mx-auto flex justify-center">
-          <a href="/">
+          <Link href="/">
             <img
               src="https://cdn.strawberrylabs.net/strawberrylabs/ecoventure-main-logo.webp"
               alt="Ecoventure Logo"
               className="h-6"
             />
-          </a>
+          </Link>
         </div>
       </div>
       <div className="mt-16 flex-grow lg:w-3/4 p-8 overflow-auto">
