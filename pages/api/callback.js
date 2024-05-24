@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     // Log the origin to the console or handle it as needed
     console.log("Request Origin:", origin);
 
-    console.log(`Callback Body: \n\n${JSON.stringify(req.body["||mid"])}`);
+    console.log(`Callback Body: \n\n${JSON.stringify(req.body)}`);
 
     if (req.method === "POST") {
       const callbackData = parseCallbackData(req.body["||mid"]);

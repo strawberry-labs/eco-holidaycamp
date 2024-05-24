@@ -1,31 +1,41 @@
-// pages/api/listAttendees.js
 import dbConnect from "../../utils/dbConnect";
 import Order from "../../models/OrderModel";
-import Attendee from "../../models/AttendeeModel";
+import mongoose from "mongoose";
 
 export default async function handler(req, res) {
   await dbConnect();
 
-  const { page_no = 1, page_size = 10, ...filters } = req.query;
-  const skip = (page_no - 1) * page_size;
+  const {
+    page_no = 1,
+    page_size = 10,
+    status,
+    location,
+    email,
+    emergencyContact,
+    ageGroup,
+    activitySelection,
+    allWeeks,
+  } = req.query;
 
-  // Filters for Attendees and Orders
-  const attendeeFilters = {};
-  const orderFilters = {};
+  const pageNumber = parseInt(page_no);
+  const pageSize = parseInt(page_size);
 
-  // Dynamically build filters for Attendee and Order based on fields
-  Object.keys(filters).forEach((key) => {
-    if (key.startsWith("attendee_")) {
-      const fieldName = key.substring(9); // Remove 'attendee_' prefix
-      attendeeFilters[fieldName] = { $regex: filters[key], $options: "i" };
-    } else {
-      const fieldName = key;
-      orderFilters[fieldName] = { $regex: filters[key], $options: "i" };
-    }
-  });
+  // Build filters based on the query parameters
+  const orderFilter = {};
+  if (status) orderFilter.status = status;
+  if (location) orderFilter.location = location;
+  if (email) orderFilter.email = new RegExp(email, "i");
 
-  const pipeline = [
-    { $match: orderFilters },
+  const attendeeFilter = {};
+  if (ageGroup) attendeeFilter["attendeeDetails.ageGroup"] = ageGroup;
+  if (activitySelection)
+    attendeeFilter["attendeeDetails.activitySelection"] = activitySelection;
+  if (allWeeks !== undefined)
+    attendeeFilter["attendeeDetails.weeks.allWeeks"] = allWeeks === "true";
+
+  // Aggregation pipeline for fetching data
+  const aggregateQuery = [
+    { $match: orderFilter },
     {
       $lookup: {
         from: "attendees",
@@ -34,34 +44,43 @@ export default async function handler(req, res) {
         as: "attendeeDetails",
       },
     },
-    { $unwind: "$attendeeDetails" },
+    { $match: attendeeFilter },
+    { $skip: (pageNumber - 1) * pageSize },
+    { $limit: pageSize },
   ];
 
-  console.log(attendeeFilters);
+  // Build the aggregation pipeline for counting
+  const countAggregateQuery = [
+    { $match: orderFilter },
+    {
+      $lookup: {
+        from: "attendees",
+        localField: "attendees",
+        foreignField: "_id",
+        as: "attendeeDetails",
+      },
+    },
+    { $match: attendeeFilter },
+    { $group: { _id: null, count: { $sum: 1 } } },
+  ];
 
-  // Only add the $match stage if there are filters for attendees
-  if (Object.keys(attendeeFilters).length > 0) {
-    pipeline.push({ $match: { attendeeDetails: { ...attendeeFilters } } });
-  }
-
-  // Add pagination stages at the end
-  pipeline.push({ $skip: skip });
-  pipeline.push({ $limit: parseInt(page_size) });
-  console.log(JSON.stringify(pipeline, null, 2));
   try {
-    const orders = await Order.aggregate(pipeline);
-    console.log(orders);
+    // Execute the count aggregation
+    const countResults = await Order.aggregate(countAggregateQuery);
+    const total = countResults.length > 0 ? countResults[0].count : 0;
 
-    const total = await Order.countDocuments(orderFilters);
+    // Execute the main aggregation to fetch the data
+    const results = await Order.aggregate(aggregateQuery);
 
     res.status(200).json({
       success: true,
-      data: orders,
-      total,
-      page_no,
-      pages: Math.ceil(total / page_size),
+      data: results,
+      total: total,
+      page_no: pageNumber,
+      pages: Math.ceil(total / pageSize),
     });
   } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
+    console.error("Aggregation error:", error);
+    res.status(500).json({ success: false, error: error.message });
   }
 }
