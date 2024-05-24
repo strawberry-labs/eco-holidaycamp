@@ -398,7 +398,6 @@ export default function Register() {
                 <label>
                   Please provide the names of friends or siblings who you would
                   like to be grouped together.{" "}
-                  <span className="text-red-500">*</span>
                   <input
                     type="text"
                     name="friendsOrSiblingsNames"
