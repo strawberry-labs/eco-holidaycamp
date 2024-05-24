@@ -32,7 +32,7 @@ export default async function handler(req, res) {
       const orderNumber = newOrder._id.toString();
       const formattedAmount = parseFloat(orderAmount).toFixed(2);
       const orderCurrency = "AED";
-      const orderDescription = "test";
+      const orderDescription = newOrder.location;
 
       // Compute the hash
       const toMD5 =
