@@ -111,23 +111,37 @@ const getHtmlConfirmationEmailContent = (order) => {
   htmlTemplate = htmlTemplate.replace("{{attendeesDetails}}", attendeesDetails);
   htmlTemplate = htmlTemplate.replace("{{total}}", totalSum.toFixed(2));
 
+  console.log(order.location);
   switch (order.location) {
     case "Kings Al Barsha":
-      htmlTemplate.replace(
-        "{{embed_link}}",
-        `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d30164.770492381467!2d55.252068715508635!3d25.079669838646602!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f6eeba2badd1d%3A0xe98b599532679868!2sKings&#39;%20School%20Al%20Barsha!5e0!3m2!1sen!2sae!4v1716481981429!5m2!1sen!2sae`
+      console.log("im inside this case");
+      htmlTemplate = htmlTemplate.replace(
+        "{{map_link}}",
+        `https://maps.app.goo.gl/YM6gVRX1Uhj8K2cX7`
+      );
+      htmlTemplate = htmlTemplate.replace(
+        "{{map_image_link}}",
+        `https://cdn.strawberrylabs.net/strawberrylabs/kings-barsha.png`
       );
       break;
     case "Kings School Dubai":
-      htmlTemplate.replace(
-        "{{embed_link}}",
-        `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115583.33804915193!2d55.043285697265596!3d25.13639020000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f6a4cfe809601%3A0x7a31dfbc6141d9c1!2sKings&#39;%20School%20Dubai!5e0!3m2!1sen!2sae!4v1716482493122!5m2!1sen!2sae`
+      htmlTemplate = htmlTemplate.replace(
+        "{{map_link}}",
+        `https://maps.app.goo.gl/HZygjbZE11oTDXU96`
+      );
+      htmlTemplate = htmlTemplate.replace(
+        "{{map_image_link}}",
+        `https://cdn.strawberrylabs.net/strawberrylabs/kings-dubai.png`
       );
       break;
     default:
-      htmlTemplate.replace(
-        "{{embed_link}}",
-        `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d30164.770492381467!2d55.252068715508635!3d25.079669838646602!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f6eeba2badd1d%3A0xe98b599532679868!2sKings&#39;%20School%20Al%20Barsha!5e0!3m2!1sen!2sae!4v1716481981429!5m2!1sen!2sae`
+      htmlTemplate = htmlTemplate.replace(
+        "{{map_link}}",
+        `https://maps.app.goo.gl/YM6gVRX1Uhj8K2cX7`
+      );
+      htmlTemplate = htmlTemplate.replace(
+        "{{map_image_link}}",
+        `https://cdn.strawberrylabs.net/strawberrylabs/kings-dubai.png`
       );
   }
 

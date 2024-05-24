@@ -13,8 +13,8 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen bg-white text-black">
-      <div className="w-2/5 sticky top-0 h-screen relative">
+    <div className="flex flex-col md:flex-row h-screen bg-white text-black">
+      <div className="hidden md:block md:w-2/5 sticky top-0 h-screen relative">
         <img
           src="https://cdn.strawberrylabs.net/strawberrylabs/eco-camp.jpeg"
           alt="Event Banner"
@@ -38,16 +38,30 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="w-3/5 overflow-auto p-8">
+      <div className="w-full md:w-3/5 overflow-auto p-8 md:p-8">
+        <div className="lg:hidden bg-white p-6 shadow-md fixed top-0 left-0 right-0 z-10">
+          <div className="max-w-7xl mx-auto flex justify-center">
+            <a href="/">
+              <img
+                src="https://cdn.strawberrylabs.net/strawberrylabs/ecoventure-main-logo.webp"
+                alt="Ecoventure Logo"
+                className="h-6"
+              />
+            </a>
+          </div>
+        </div>
         <section>
-          <h1 className="text-4xl font-bold" style={{ color: "#F5B028" }}>
+          <h1
+            className="mt-20 md:mt-2 text-3xl md:text-4xl font-bold mt-2"
+            style={{ color: "#F5B028" }}
+          >
             SUMMER HOLIDAY CAMP AL BARSHA TEST
           </h1>
           <br />
           <p>11 Jun - 11 Jul, 2024</p>
           <p>📍 Kings Al Barsha</p>
           <button
-            className="w-36 mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="w-36 md:w-36 mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             style={{ backgroundColor: "#F5B028" }}
           >
             <a
@@ -65,11 +79,13 @@ export default function Home() {
           <h2 className="text-xl font-semibold">Ticket Types</h2>
           <div className="flex flex-col gap-4">
             <div className="flex mt-4 justify-between items-center">
-              <p>Summer Camp Registration</p>
+              <p>
+                <strong>Summer Camp Registration</strong>
+              </p>
               <select
                 value={selectedQuantity}
                 onChange={(e) => setSelectedQuantity(e.target.value)}
-                className="border p-2 w-36"
+                className="border border-black rounded p-2 w-20 md:w-36"
               >
                 {Array.from({ length: 10 }, (_, i) => i + 1).map((number) => (
                   <option key={number} value={number}>
@@ -81,7 +97,7 @@ export default function Home() {
             <div className="flex justify-end">
               <button
                 onClick={handleBuyClick}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-48"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full md:w-36"
                 style={{ backgroundColor: "#F5B028", color: "black" }}
               >
                 Buy Tickets

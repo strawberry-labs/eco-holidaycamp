@@ -19,6 +19,8 @@ export default function Register() {
     bookingConfirmation: false,
   });
 
+  const [isPriceExpanded, setIsPriceExpanded] = useState(false);
+
   useEffect(() => {
     const img = new Image();
     img.src = "/eco-loader.png"; // Path to your loader image
@@ -57,7 +59,16 @@ export default function Register() {
   const handleChange = (index, event) => {
     const { name, value, type, checked } = event.target;
     const updatedForms = [...forms];
+
+    // Update the value
     updatedForms[index][name] = type === "checkbox" ? checked : value;
+
+    // Additional logic for ageGroup change
+    if (name === "ageGroup" && value !== "3" && value !== "4") {
+      updatedForms[index].toiletTrained = true;
+      updatedForms[index].attendedOneTerm = true;
+    }
+
     setForms(updatedForms);
   };
 
@@ -259,17 +270,30 @@ export default function Register() {
   };
 
   return (
-    <div className="flex min-h-screen bg-white text-black">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-white text-black">
       {loading && <FullScreenLoader />}
-      <div className="flex-grow w-3/4 p-8 overflow-auto">
-        <h1 className="text-3xl font-bold mb-6">Register/Purchase Tickets</h1>
+      <div className="bg-white p-6 shadow-md fixed top-0 left-0 right-0 z-10">
+        <div className="max-w-7xl mx-auto flex justify-center">
+          <a href="/">
+            <img
+              src="https://cdn.strawberrylabs.net/strawberrylabs/ecoventure-main-logo.webp"
+              alt="Ecoventure Logo"
+              className="h-6"
+            />
+          </a>
+        </div>
+      </div>
+      <div className="mt-16 flex-grow lg:w-3/4 p-8 overflow-auto">
+        <h1 className="text-2xl md:text-3xl font-bold mb-6">
+          Register/Purchase Tickets
+        </h1>
         <form onSubmit={handleSubmit}>
           {forms.map((form, index) => (
             <div key={index} className="mb-6 p-4 border rounded">
               <h3 className="text-lg font-semibold mb-2">
                 Attendee {index + 1} Details:
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <label>
                   First Name <span className="text-red-500">*</span>
                   <input
@@ -280,7 +304,6 @@ export default function Register() {
                     placeholder="First Name"
                     className="mt-1 p-2 w-full border rounded"
                   />
-                  <p className="text-xs">{`Atendee is the person who will attend the Summer Camp.`}</p>
                 </label>
                 <label>
                   Last Name <span className="text-red-500">*</span>
@@ -347,7 +370,6 @@ export default function Register() {
                       ETB + Multi Activity
                     </option>
                   </select>
-                  <p className="text-xs mt-1">{`Multi - Activity includes sports, swimming, arts and crafts, baking, and specialist activities such as karate and climbing. || ETB + Multi Activity includes 2 classroom engineering sessions and 2 multi activity sessions each day.`}</p>
                 </label>
                 {(form.ageGroup === "3" || form.ageGroup === "4") && (
                   <>
@@ -383,22 +405,7 @@ export default function Register() {
                     placeholder="Medical Conditions"
                     className="mt-1 p-2 w-full border rounded"
                   />
-                  <p className="text-xs">{`Please tell us about any medical information that might impact your adventure. (E.g. physical injuries, allergies, illnesses, SEN requirements, etc.)`}</p>
                 </label>
-                {/* <label>
-                  Swimming Ability <span className="text-red-500">*</span>
-                  <select
-                    name="swimmingAbility"
-                    value={form.swimmingAbility}
-                    onChange={(e) => handleChange(index, e)}
-                    className="mt-1 p-2 w-full border rounded"
-                  >
-                    <option value="">Select Swimming Ability</option>
-                    <option value="Non-swimmer">Non-swimmer</option>
-                    <option value="Learning to swim">Learning to swim</option>
-                    <option value="Competent swimmer">Competent swimmer</option>
-                  </select>
-                </label> */}
                 <label>
                   What school does your child attend?{" "}
                   <span className="text-red-500">*</span>
@@ -410,7 +417,6 @@ export default function Register() {
                     placeholder="School Name"
                     className="mt-1 p-2 w-full border rounded"
                   />
-                  <p className="text-xs">{`Please note that this does not have to be a Kings' School. All children are welcome.`}</p>
                 </label>
                 <label>
                   Please provide the names of friends or siblings who you would
@@ -424,7 +430,6 @@ export default function Register() {
                     placeholder="Friends or Siblings Names"
                     className="mt-1 p-2 w-full border rounded"
                   />
-                  <p className="text-xs">{`IMPORTANT - We will do our best to group friends / siblings together. However, in the interest of safety we aim to not have more than a two year age difference within a group.`}</p>
                 </label>
                 <div className="mt-4">
                   <label className="block font-bold mb-1">
@@ -491,7 +496,7 @@ export default function Register() {
             </div>
           ))}
 
-          <div className="mt-4 p-4 border rounded">
+          <div className="mt-4 mb-32 p-4 border rounded">
             <h2 className="text-lg font-semibold mb-2">Order Details</h2>
             <label>
               Email <span className="text-red-500">*</span>
@@ -590,13 +595,8 @@ export default function Register() {
           </div>
         </form>
       </div>
-      <div className="w-1/4 sticky top-0 h-screen flex flex-col py-4 px-8 bg-gray-100 overflow-y-auto">
-        <img
-          src="https://cdn.strawberrylabs.net/strawberrylabs/ecoventure-main-logo.webp"
-          alt="Company Logo"
-          className="w-3/4 mt-4 mb-4"
-        />
-        <div className="mt-4">
+      <div className="hidden lg:flex lg:w-1/4 sticky top-0 h-screen flex-col py-4 px-8 bg-gray-100 overflow-y-auto">
+        <div className="mt-20">
           <h3 className="text-lg font-bold mb-2">Price Breakdown</h3>
           {forms.map((form, index) => (
             <div key={index} className="mb-4">
@@ -621,11 +621,52 @@ export default function Register() {
           </p>
           <button
             onClick={handleSubmit}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full mt-4"
+            className="bg-yellow-500 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded w-full mt-4"
           >
             Proceed to Payment
           </button>
         </div>
+      </div>
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gray-100 p-4 border-t-2">
+        <div className="flex justify-between items-center">
+          <p className="text-lg font-bold">
+            Total: AED{" "}
+            {forms.reduce((total, form) => total + form.priceDetails.price, 0)}
+          </p>
+          <button
+            onClick={() => setIsPriceExpanded(!isPriceExpanded)}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            {isPriceExpanded ? "Hide Details" : "View Details"}
+          </button>
+        </div>
+        {isPriceExpanded && (
+          <div className="mt-4">
+            {forms.map((form, index) => (
+              <div key={index} className="mb-4">
+                <h4 className="font-bold">Attendee {index + 1}:</h4>
+                {form.priceDetails.details.map((item, idx) => (
+                  <div key={idx}>
+                    {item.week ? <h5 className="pl-2">{item.week}</h5> : null}
+                    {item.details &&
+                      item.details.map((detail, detailIndex) => (
+                        <p className="pl-4" key={detailIndex}>
+                          {detail.description} - {detail.cost}
+                        </p>
+                      ))}
+                  </div>
+                ))}
+                <p className="font-bold">Total: {form.priceDetails.price}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        <button
+          onClick={handleSubmit}
+          className="bg-yellow-500 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded w-full mt-4"
+        >
+          Proceed to Payment
+        </button>
       </div>
     </div>
   );
