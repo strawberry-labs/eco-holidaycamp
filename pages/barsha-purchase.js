@@ -614,38 +614,49 @@ export default function Register() {
           </div>
         </form>
       </div>
-      <div className="hidden lg:flex lg:w-1/4 sticky top-0 h-screen flex-col py-4 px-8 bg-gray-100 overflow-y-auto">
-        <div className="mt-20">
-          <h3 className="text-lg font-bold mb-2">Price Breakdown</h3>
-          {forms.map((form, index) => (
-            <div key={index} className="mb-4">
-              <h4 className="font-bold">Attendee {index + 1}:</h4>
-              {form.priceDetails.details.map((item, idx) => (
-                <div key={idx}>
-                  {item.week ? <h5 className="pl-2">{item.week}</h5> : null}
-                  {item.details &&
-                    item.details.map((detail, detailIndex) => (
-                      <p className="pl-4" key={detailIndex}>
-                        {detail.description} - {detail.cost}
-                      </p>
-                    ))}
-                </div>
-              ))}
-              <p className="font-bold">Total: {form.priceDetails.price}</p>
-            </div>
-          ))}
-          <p className="text-lg font-bold mt-6">
-            Total Price: AED{" "}
-            {forms.reduce((total, form) => total + form.priceDetails.price, 0)}
-          </p>
-          <button
-            onClick={handleSubmit}
-            className="bg-yellow-500 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded w-full mt-4"
-          >
-            Proceed to Payment
-          </button>
+      <div className="hidden lg:flex lg:w-1/4 sticky top-0 h-screen flex-col py-4 px-8 bg-gray-100">
+        <div className="flex flex-col h-full">
+          {/* Scrollable Container for Price Breakdown */}
+          <div className="overflow-y-auto flex-grow mt-20">
+            <h3 className="text-lg font-bold mb-2">Price Breakdown</h3>
+            {forms.map((form, index) => (
+              <div key={index} className="mb-4">
+                <h4 className="font-bold">Attendee {index + 1}:</h4>
+                {form.priceDetails.details.map((item, idx) => (
+                  <div key={idx}>
+                    {item.week ? <h5 className="pl-2">{item.week}</h5> : null}
+                    {item.details &&
+                      item.details.map((detail, detailIndex) => (
+                        <p className="pl-4" key={detailIndex}>
+                          {detail.description} - {detail.cost}
+                        </p>
+                      ))}
+                  </div>
+                ))}
+                <p className="font-bold">Total: {form.priceDetails.price}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Fixed Button at the Bottom */}
+          <div className="mt-auto">
+            <p className="text-lg font-bold mt-6 mb-2">
+              Total Price: AED{" "}
+              {forms.reduce(
+                (total, form) => total + form.priceDetails.price,
+                0
+              )}
+            </p>
+            <button
+              onClick={handleSubmit}
+              className="bg-yellow-500 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded w-full"
+            >
+              Proceed to Payment
+            </button>
+          </div>
         </div>
       </div>
+
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-gray-100 p-4 border-t-2">
         <div className="flex justify-between items-center">
           <p className="text-lg font-bold">
