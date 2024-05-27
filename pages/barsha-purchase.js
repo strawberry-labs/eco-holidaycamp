@@ -339,7 +339,7 @@ export default function Register() {
                     </option>
                   </select>
                   <p className="text-xs mt-2">
-                    {`Multi - Activity includes sports, arts and crafts, baking, and specialist activities such as karate and climbing. || ETB + Multi Activity includes 2 classroom engineering sessions and 2 multi activity sessions each day.`}
+                    {`ETB + Multi Activities includes a main project session, a coding or STEM challenge session, and two multi-activity sessions each day.`}
                   </p>
                 </label>
                 {(form.ageGroup === "3" || form.ageGroup === "4") && (
