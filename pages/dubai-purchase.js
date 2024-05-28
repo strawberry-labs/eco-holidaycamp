@@ -334,8 +334,9 @@ export default function Register() {
                   </select>
                 </label>
                 <label>
-                  Select your Program <span className="text-red-500">*</span>
+                  Program <span className="text-red-500">*</span>
                   <select
+                    disabled={true}
                     name="activitySelection"
                     value={form.activitySelection}
                     onChange={(e) => handleChange(index, e)}
