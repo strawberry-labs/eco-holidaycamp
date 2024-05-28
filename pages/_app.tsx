@@ -2,6 +2,7 @@
 import "@/styles/globals.css";
 import { AppProps } from "next/app";
 import Head from "next/head";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -32,6 +33,7 @@ function App({ Component, pageProps }: AppProps) {
         <meta name="theme-color" content="#ffffff" />
       </Head>
       <Component {...pageProps} />
+      <GoogleTagManager gtmId="G-68C3VHQGYR" />
     </>
   );
 }
