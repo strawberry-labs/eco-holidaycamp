@@ -20,6 +20,15 @@ export default function Register() {
     bookingConfirmation: false,
   });
 
+  const datesText = [
+    "8th Jul - 12th Jul",
+    "15th Jul - 19th Jul",
+    "22nd Jul - 26th Jul",
+    "29th Jul - 2nd Aug",
+    "5th Aug - 9th Aug",
+    "12th Aug - 16th Aug",
+  ];
+
   const [isPriceExpanded, setIsPriceExpanded] = useState(false);
 
   useEffect(() => {
@@ -443,7 +452,7 @@ export default function Register() {
                         checked={form.weeks.selectedWeeks[i]}
                         onChange={(e) => handleWeeksChange(index, i, e)}
                       />{" "}
-                      Week {i + 1}
+                      {`Week ${i + 1} (${datesText[i]})`}
                     </label>
                     <div
                       className={`pl-4 grid grid-cols-5 gap-2 ${
