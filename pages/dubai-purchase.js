@@ -65,6 +65,7 @@ export default function Register() {
   const emailRegex =
     /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g;
   const phoneRegex = /\+?\d+/;
+  const fullNameRegex = /^[\p{L}\s'-]+$/u;
 
   const handleChange = (index, event) => {
     const { name, value, type, checked } = event.target;
@@ -161,6 +162,9 @@ export default function Register() {
 
   const validateForm = () => {
     const isValidEmail = emailRegex.test(orderDetails.email);
+    const isValidFullName = fullNameRegex.test(
+      orderDetails.emergencyContact1Name
+    );
     const isValidContact1 = phoneRegex.test(
       orderDetails.emergencyContact1Phone
     );
@@ -184,6 +188,7 @@ export default function Register() {
 
     return (
       isValidEmail &&
+      isValidFullName &&
       orderDetails.emergencyContact1Name.length > 0 &&
       isValidContact1 &&
       orderDetails.emergencyContact2Name.length > 0 &&
@@ -504,7 +509,8 @@ export default function Register() {
               />
             </label>
             <label>
-              Emergency Contact 1 Name <span className="text-red-500">*</span>
+              Emergency Contact 1 - <i>Full Name</i>{" "}
+              <span className="text-red-500">*</span>
               <input
                 type="text"
                 name="emergencyContact1Name"
@@ -515,7 +521,8 @@ export default function Register() {
               />
             </label>
             <label>
-              Emergency Contact 1 Phone <span className="text-red-500">*</span>
+              Emergency Contact 1 - Phone Number{" "}
+              <span className="text-red-500">*</span>
               <input
                 type="text"
                 name="emergencyContact1Phone"
@@ -526,7 +533,8 @@ export default function Register() {
               />
             </label>
             <label>
-              Emergency Contact 2 Name <span className="text-red-500">*</span>
+              Emergency Contact 2 - Full Name{" "}
+              <span className="text-red-500">*</span>
               <input
                 type="text"
                 name="emergencyContact2Name"
@@ -537,7 +545,8 @@ export default function Register() {
               />
             </label>
             <label>
-              Emergency Contact 2 Phone <span className="text-red-500">*</span>
+              Emergency Contact 2 - Phone Number{" "}
+              <span className="text-red-500">*</span>
               <input
                 type="text"
                 name="emergencyContact2Phone"
