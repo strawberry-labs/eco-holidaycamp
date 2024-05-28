@@ -51,7 +51,7 @@ export default function Register() {
         swimmingAbility: "",
         schoolName: "",
         friendsOrSiblingsNames: "",
-        activitySelection: "",
+        activitySelection: "ETB + Multi Activity",
         weeks: {
           allWeeks: false,
           selectedWeeks: Array(6).fill(false),
@@ -342,7 +342,6 @@ export default function Register() {
                     className="mt-1 p-2 w-full border rounded"
                   >
                     <option value="">Select Program</option>
-                    <option value="Multi Activity">Multi Activity</option>
                     <option value="ETB + Multi Activity">
                       ETB + Multi Activity
                     </option>
