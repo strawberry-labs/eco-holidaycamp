@@ -270,14 +270,14 @@ export default function Register() {
                 </h3>
                 <div className="grid grid-cols-1 gap-4">
                   <label>
-                    {`Partipant's First Name `}
+                    {`Participant's First Name `}
                     <span className="text-red-500">*</span>
                     <input
                       type="text"
                       name="firstName"
                       value={form.firstName}
                       onChange={(e) => handleChange(index, e)}
-                      placeholder="Partipant's First Name"
+                      placeholder="Participant's First Name"
                       className="mt-1 p-2 w-full border rounded"
                     />
                     <p className="text-xs mt-2">
@@ -285,14 +285,14 @@ export default function Register() {
                     </p>
                   </label>
                   <label>
-                    {`Partipant's Family Name `}
+                    {`Participant's Family Name `}
                     <span className="text-red-500">*</span>
                     <input
                       type="text"
                       name="lastName"
                       value={form.lastName}
                       onChange={(e) => handleChange(index, e)}
-                      placeholder="Partipant's Family Name"
+                      placeholder="Participant's Family Name"
                       className="mt-1 p-2 w-full border rounded"
                     />
                   </label>
