@@ -167,15 +167,6 @@ export default function Register() {
 
   const validateForm = () => {
     const isValidEmail = emailRegex.test(orderDetails.email);
-    const isValidFullName = fullNameRegex.test(
-      orderDetails.emergencyContact1Name
-    );
-    const isValidContact1 = phoneRegex.test(
-      orderDetails.emergencyContact1Phone
-    );
-    const isValidContact2 = phoneRegex.test(
-      orderDetails.emergencyContact2Phone
-    );
 
     const hasAllRequiredFields = forms.every((form) => {
       return (
@@ -193,11 +184,8 @@ export default function Register() {
 
     return (
       isValidEmail &&
-      isValidFullName &&
       orderDetails.emergencyContact1Name.length > 0 &&
-      isValidContact1 &&
       orderDetails.emergencyContact2Name.length > 0 &&
-      isValidContact2 &&
       hasAllRequiredFields &&
       orderDetails.termsAndConditions &&
       orderDetails.orderConfirmation &&
@@ -207,11 +195,6 @@ export default function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const isValidEmail = emailRegex.test(orderDetails.email);
-    const isValidFullName = fullNameRegex.test(
-      orderDetails.emergencyContact1Name
-    );
 
     if (validateForm()) {
       setLoading(true); // Show loader
@@ -251,11 +234,7 @@ export default function Register() {
       }
     } else {
       alert(
-        isValidEmail && isValidFullName
-          ? `Please check your entries and make sure all required fields are filled correctly.`
-          : `Please enter your ${!isValidEmail ? "Email" : ""}${
-              !isValidEmail && !isValidFullName ? " and " : ""
-            }${!isValidFullName ? "Emergency Contact Full Name" : ""} correctly`
+        `Please check your entries and make sure all required fields are filled correctly.`
       );
     }
   };
