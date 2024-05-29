@@ -77,8 +77,8 @@ export default function Register() {
 
     // Additional logic for ageGroup change
     if (name === "ageGroup" && value !== "3" && value !== "4") {
-      updatedForms[index].toiletTrained = true;
-      updatedForms[index].attendedOneTerm = true;
+      updatedForms[index].toiletTrained = false;
+      updatedForms[index].attendedOneTerm = false;
     }
 
     setForms(updatedForms);
@@ -203,6 +203,7 @@ export default function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     const isValidEmail = emailRegex.test(orderDetails.email);
     const isValidFullName = fullNameRegex.test(
       orderDetails.emergencyContact1Name
