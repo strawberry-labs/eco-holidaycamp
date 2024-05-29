@@ -77,9 +77,13 @@ export default function Register() {
 
     // Additional logic for ageGroup change
     if (name === "ageGroup" && value !== "3" && value !== "4") {
+      updatedForms[index].toiletTrained = true;
+      updatedForms[index].attendedOneTerm = true;
+    } else if (name === "ageGroup" && (value == "3" || value == "4")) {
       updatedForms[index].toiletTrained = false;
       updatedForms[index].attendedOneTerm = false;
     }
+    console.log(updatedForms);
 
     setForms(updatedForms);
   };
