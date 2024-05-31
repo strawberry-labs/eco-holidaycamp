@@ -10,7 +10,7 @@ export default function Register() {
   const { quantity, type } = router.query;
   const [forms, setForms] = useState([]);
   const [orderDetails, setOrderDetails] = useState({
-    location: "Kings' School Al Barsha",
+    location: "Kings' School Dubai",
     email: "",
     emergencyContact1Name: "",
     emergencyContact1Phone: "",
