@@ -18,8 +18,8 @@ export default async function handler(req, res) {
 
       // Determine the order status based on the day of the week
       const dayOfWeek = new Date().getDay();
-      const status =
-        dayOfWeek === 6 || dayOfWeek === 0 ? "WAITLIST" : "PENDING_PAYMENT";
+      const status = "PENDING_PAYMENT";
+      // dayOfWeek === 6 || dayOfWeek === 0 ? "WAITLIST" : "PENDING_PAYMENT";
 
       // Create the order in the database
       const newOrder = await new Order({
