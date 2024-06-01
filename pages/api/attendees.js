@@ -1,5 +1,6 @@
 import dbConnect from "../../utils/dbConnect";
 import Order from "../../models/OrderModel";
+import cors from "../../utils/corsMiddleware";
 
 export default async function handler(req, res) {
   await cors(req, res);
