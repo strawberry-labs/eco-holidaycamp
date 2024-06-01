@@ -36,7 +36,7 @@ export const sendBookingPendingEmail = async (
   const htmlBody = getHtmlEmailContent(orderId, bookingLink);
 
   const params = {
-    Source: "Ecoventure Bookings <bookings@strawberrylabs.net>",
+    Source: "Ecoventure Bookings <info@ecoventureme.com>",
     Destination: {
       ToAddresses: [toEmail],
     },
@@ -156,7 +156,7 @@ export const sendBookingConfirmationEmail = async (orderId) => {
   const htmlBody = getHtmlConfirmationEmailContent(order);
 
   const params = {
-    Source: "Ecoventure Bookings <bookings@strawberrylabs.net>",
+    Source: "Ecoventure Bookings <info@ecoventureme.com>",
     Destination: {
       ToAddresses: [toEmail],
     },
