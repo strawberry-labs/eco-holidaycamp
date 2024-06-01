@@ -17,7 +17,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-gray-100 h-screen text-black">
+    <div className="bg-gray-100 h-screen text-black flex flex-col">
       <div className="bg-white p-6 shadow-md fixed top-0 left-0 right-0 z-10">
         <div className="max-w-7xl mx-auto flex justify-center">
           <Link href="/">
@@ -29,7 +29,7 @@ export default function HomePage() {
           </Link>
         </div>
       </div>
-      <div className="flex flex-col items-center mt-16 md:mt-0 md:justify-center h-full pt-16">
+      <div className="flex-grow flex flex-col items-center mt-16 md:mt-0 md:justify-center pt-16">
         <div className="bg-white p-8 shadow-lg rounded-md w-3/4 max-w-xl text-center">
           <img
             src="https://cdn.strawberrylabs.net/strawberrylabs/holiday_program.webp"
@@ -55,7 +55,6 @@ export default function HomePage() {
               <option value="">Select a location</option>
               <option value="dubai">{`Kings' School Dubai`}</option>
               <option value="barsha">{`Kings' School Al Barsha`}</option>
-              {/* <option value="nadalsheba">Kings School Nad Al Sheba</option> */}
             </select>
           </div>
           <button
@@ -66,6 +65,19 @@ export default function HomePage() {
           </button>
         </div>
       </div>
+      <footer className="text-center text-xs p-4 bg-white shadow-inner mt-4">
+        <p>
+          Powered by{" "}
+          <a
+            href="https://strawberrylabs.net"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 text-xs hover:underline"
+          >
+            Strawberry Labs
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
