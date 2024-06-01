@@ -2,6 +2,8 @@ import dbConnect from "../../utils/dbConnect";
 import Order from "../../models/OrderModel";
 
 export default async function handler(req, res) {
+  await cors(req, res);
+
   if (req.method === "GET") {
     // Check for API key in the query parameters
     if (req.headers["api_key"] !== process.env.API_KEY) {
