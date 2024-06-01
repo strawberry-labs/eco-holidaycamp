@@ -90,7 +90,7 @@ export default async function handler(req, res) {
       res.status(500).json({ success: false, message: error.message });
     }
   } else {
-    res.setHeader("Allow", ["GET", "POST"]);
+    res.setHeader("Allow", ["OPTIONS", "GET", "POST"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }
