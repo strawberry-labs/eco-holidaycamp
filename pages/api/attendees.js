@@ -30,6 +30,8 @@ export default async function handler(req, res) {
         },
         {
           $project: {
+            _id: 0, // Exclude the default _id
+            id: "$attendeeDetails._id",
             firstName: "$attendeeDetails.firstName",
             lastName: "$attendeeDetails.lastName",
             dateOfBirth: "$attendeeDetails.dateOfBirth",
