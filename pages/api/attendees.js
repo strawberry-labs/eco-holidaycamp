@@ -7,11 +7,11 @@ export default async function handler(req, res) {
 
   if (req.method === "GET") {
     // Check for API key in the query parameters
-    // if (req.headers["api_key"] !== process.env.API_KEY) {
-    //   console.log(req.headers["api_key"]);
-    //   console.log(process.env.API_KEY);
-    //   return res.status(401).json({ success: false, message: "Unauthorized" });
-    // }
+    if (req.headers["api_key"] !== process.env.API_KEY) {
+      console.log(req.headers["api_key"]);
+      console.log(process.env.API_KEY);
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
 
     try {
       await dbConnect();
