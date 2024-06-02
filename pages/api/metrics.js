@@ -1,0 +1,80 @@
+import dbConnect from "../../utils/dbConnect";
+import Attendee from "../../models/AttendeeModel";
+import Order from "../../models/OrderModel";
+import Payment from "../../models/PaymentModel";
+
+export default async function handler(req, res) {
+  await dbConnect();
+
+  try {
+    if (req.method === "GET") {
+      if (req.headers["api_key"] !== process.env.API_KEY) {
+        console.log(req.headers["api_key"]);
+        console.log(process.env.API_KEY);
+        return res
+          .status(401)
+          .json({ success: false, message: "Unauthorized" });
+      }
+
+      // Fetch all paid orders
+      const paidOrders = await Order.find({ status: "PAID" });
+
+      // Extract attendee IDs from paid orders
+      const attendeeIds = paidOrders.flatMap((order) => order.attendees);
+
+      // Total number of attendees from paid orders
+      const totalAttendees = await Attendee.countDocuments({
+        _id: { $in: attendeeIds },
+      });
+
+      // Total number of paid orders
+      const totalOrders = paidOrders.length;
+
+      // Total revenue generated from successful sale payments
+      const totalRevenue = await Payment.aggregate([
+        { $match: { status: "success", type: "sale" } },
+        { $group: { _id: null, totalAmount: { $sum: "$order_amount" } } },
+      ]);
+
+      // Number of orders by status (for any status)
+      const ordersByStatus = await Order.aggregate([
+        { $group: { _id: "$status", count: { $sum: 1 } } },
+      ]);
+
+      // Revenue by date
+      const revenueByDate = await Payment.aggregate([
+        { $match: { status: "success", type: "sale" } },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            totalAmount: { $sum: "$order_amount" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            date: "$_id",
+            totalAmount: 1,
+          },
+        },
+        { $sort: { date: 1 } },
+      ]);
+
+      const metrics = {
+        totalAttendees,
+        totalOrders,
+        totalRevenue: totalRevenue[0]?.totalAmount || 0,
+        ordersByStatus,
+        revenueByDate,
+      };
+
+      res.status(200).json(metrics);
+    } else {
+      res.setHeader("Allow", ["OPTIONS", "GET"]);
+      res.status(405).end(`Method ${req.method} Not Allowed`);
+    }
+  } catch (error) {
+    console.error("Error fetching metrics:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
