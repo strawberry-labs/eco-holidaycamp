@@ -2,10 +2,9 @@ import dbConnect from "../../utils/dbConnect";
 import Attendee from "../../models/AttendeeModel";
 import Order from "../../models/OrderModel";
 import Payment from "../../models/PaymentModel";
-import mongoose from "mongoose";
 
 export default async function handler(req, res) {
-  await dbConnect();
+  await cors(req, res);
 
   try {
     if (req.method === "GET") {
@@ -16,6 +15,8 @@ export default async function handler(req, res) {
           .status(401)
           .json({ success: false, message: "Unauthorized" });
       }
+
+      await dbConnect();
 
       // Fetch all paid orders
       const paidOrders = await Order.find({ status: "PAID" });
