@@ -2,6 +2,7 @@ import dbConnect from "../../utils/dbConnect";
 import Attendee from "../../models/AttendeeModel";
 import Order from "../../models/OrderModel";
 import Payment from "../../models/PaymentModel";
+import mongoose from "mongoose";
 
 export default async function handler(req, res) {
   await dbConnect();
@@ -60,12 +61,53 @@ export default async function handler(req, res) {
         { $sort: { date: 1 } },
       ]);
 
+      // Revenue by location
+      const revenueByLocation = await Order.aggregate([
+        { $match: { status: "PAID" } },
+        {
+          $lookup: {
+            from: "payments",
+            let: { order_id: { $toString: "$_id" } },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$order_number", "$$order_id"] },
+                      { $eq: ["$status", "success"] },
+                      { $eq: ["$type", "sale"] },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "payments",
+          },
+        },
+        { $unwind: "$payments" },
+        {
+          $group: {
+            _id: "$location",
+            totalAmount: { $sum: "$payments.order_amount" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            location: "$_id",
+            totalAmount: 1,
+          },
+        },
+        { $sort: { location: 1 } },
+      ]);
+
       const metrics = {
         totalAttendees,
         totalOrders,
         totalRevenue: totalRevenue[0]?.totalAmount || 0,
         ordersByStatus,
         revenueByDate,
+        revenueByLocation,
       };
 
       res.status(200).json(metrics);
