@@ -2,6 +2,7 @@ import dbConnect from "../../utils/dbConnect";
 import Attendee from "../../models/AttendeeModel";
 import Order from "../../models/OrderModel";
 import Payment from "../../models/PaymentModel";
+import cors from "../../utils/corsMiddleware";
 
 export default async function handler(req, res) {
   await cors(req, res);
