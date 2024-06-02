@@ -1,5 +1,6 @@
 import dbConnect from "../../utils/dbConnect";
 import Order from "../../models/OrderModel";
+import Attendee from "../../models/AttendeeModel";
 import cors from "../../utils/corsMiddleware";
 
 export default async function handler(req, res) {
