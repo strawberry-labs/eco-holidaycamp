@@ -6,6 +6,7 @@ import Head from "next/head";
 
 export default function Register() {
   const [loading, setLoading] = useState(false);
+  const [invalidFields, setInvalidFields] = useState({});
   const router = useRouter();
   const { quantity, type } = router.query;
   const [forms, setForms] = useState([]);
@@ -65,6 +66,7 @@ export default function Register() {
 
   const emailRegex =
     /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g;
+
   const phoneRegex = /\+?\d+/;
   const fullNameRegex = /^[\p{L}\s'-]+$/u;
 
@@ -166,31 +168,45 @@ export default function Register() {
   };
 
   const validateForm = () => {
+    let invalids = {};
     const isValidEmail = emailRegex.test(orderDetails.email);
 
-    const hasAllRequiredFields = forms.every((form) => {
-      return (
-        form.firstName &&
-        form.lastName &&
-        form.dateOfBirth &&
-        form.ageGroup &&
-        form.gender &&
-        form.medicalConditions &&
-        form.schoolName &&
-        form.activitySelection &&
-        form.weeks.selectedWeeks.some(Boolean)
-      );
+    if (!isValidEmail) invalids.email = true;
+
+    const hasAllRequiredFields = forms.every((form, idx) => {
+      let isValid = true;
+      [
+        "firstName",
+        "lastName",
+        "dateOfBirth",
+        "ageGroup",
+        "gender",
+        "medicalConditions",
+        "schoolName",
+        "activitySelection",
+      ].forEach((field) => {
+        if (!form[field]) {
+          invalids[`form${idx}_${field}`] = true;
+          isValid = false;
+        }
+      });
+      if (!form.weeks.selectedWeeks.some(Boolean)) {
+        invalids[`form${idx}_weeks`] = true;
+        isValid = false;
+      }
+      return isValid;
     });
 
-    return (
-      isValidEmail &&
-      orderDetails.emergencyContact1Name.length > 0 &&
-      orderDetails.emergencyContact2Name.length > 0 &&
-      hasAllRequiredFields &&
-      orderDetails.termsAndConditions &&
-      orderDetails.orderConfirmation &&
-      orderDetails.bookingConfirmation
-    );
+    ["emergencyContact1Name", "emergencyContact2Name"].forEach((field) => {
+      if (!orderDetails[field]) invalids[field] = true;
+    });
+
+    if (!orderDetails.termsAndConditions) invalids.termsAndConditions = true;
+    if (!orderDetails.orderConfirmation) invalids.orderConfirmation = true;
+    if (!orderDetails.bookingConfirmation) invalids.bookingConfirmation = true;
+
+    setInvalidFields(invalids);
+    return Object.keys(invalids).length === 0;
   };
 
   const handleSubmit = async (event) => {
@@ -239,6 +255,9 @@ export default function Register() {
     }
   };
 
+  const getBorderClass = (field) =>
+    invalidFields[field] ? "border-red-500" : "";
+
   return (
     <>
       <Head>
@@ -278,7 +297,9 @@ export default function Register() {
                       value={form.firstName}
                       onChange={(e) => handleChange(index, e)}
                       placeholder="Participant's First Name"
-                      className="mt-1 p-2 w-full border rounded"
+                      className={`mt-1 p-2 w-full border rounded ${getBorderClass(
+                        `form${index}_firstName`
+                      )}`}
                     />
                     <p className="text-xs mt-2">
                       Participant is the person who will attend the Summer Camp.
@@ -293,7 +314,9 @@ export default function Register() {
                       value={form.lastName}
                       onChange={(e) => handleChange(index, e)}
                       placeholder="Participant's Family Name"
-                      className="mt-1 p-2 w-full border rounded"
+                      className={`mt-1 p-2 w-full border rounded ${getBorderClass(
+                        `form${index}_lastName`
+                      )}`}
                     />
                   </label>
                   <label>
@@ -303,7 +326,9 @@ export default function Register() {
                       name="dateOfBirth"
                       value={form.dateOfBirth}
                       onChange={(e) => handleChange(index, e)}
-                      className="mt-1 p-2 w-full border rounded"
+                      className={`mt-1 p-2 w-full border rounded ${getBorderClass(
+                        `form${index}_dateOfBirth`
+                      )}`}
                     />
                   </label>
                   <label>
@@ -313,7 +338,9 @@ export default function Register() {
                       name="ageGroup"
                       value={form.ageGroup}
                       onChange={(e) => handleChange(index, e)}
-                      className="mt-1 p-2 w-full border rounded"
+                      className={`mt-1 p-2 w-full border rounded ${getBorderClass(
+                        `form${index}_ageGroup`
+                      )}`}
                     >
                       <option value="">Select Age</option>
                       {Array.from({ length: 9 }, (_, i) => i + 3).map((n) => (
@@ -330,7 +357,9 @@ export default function Register() {
                       name="gender"
                       value={form.gender}
                       onChange={(e) => handleChange(index, e)}
-                      className="mt-1 p-2 w-full border rounded"
+                      className={`mt-1 p-2 w-full border rounded ${getBorderClass(
+                        `form${index}_gender`
+                      )}`}
                     >
                       <option value="">Select Gender</option>
                       <option value="Male">Male</option>
@@ -343,7 +372,9 @@ export default function Register() {
                       name="activitySelection"
                       value={form.activitySelection}
                       onChange={(e) => handleChange(index, e)}
-                      className="mt-1 p-2 w-full border rounded"
+                      className={`mt-1 p-2 w-full border rounded ${getBorderClass(
+                        `form${index}_activitySelection`
+                      )}`}
                     >
                       <option value="">Select Program</option>
                       <option value="Multi Activity">Multi Activity</option>
@@ -364,7 +395,9 @@ export default function Register() {
                           name="toiletTrained"
                           checked={form.toiletTrained}
                           onChange={(e) => handleChange(index, e)}
-                          className="ml-2"
+                          className={`mx-1 rounded ${getBorderClass(
+                            `form${index}_toiletTrained`
+                          )}`}
                         />
                       </label>
                       <label>
@@ -375,7 +408,9 @@ export default function Register() {
                           name="attendedOneTerm"
                           checked={form.attendedOneTerm}
                           onChange={(e) => handleChange(index, e)}
-                          className="ml-2"
+                          className={`mx-1 rounded ${getBorderClass(
+                            `form${index}_attendedOneTerm`
+                          )}`}
                         />
                       </label>
                     </>
@@ -388,7 +423,9 @@ export default function Register() {
                       value={form.medicalConditions}
                       onChange={(e) => handleChange(index, e)}
                       placeholder="Medical Conditions"
-                      className="mt-1 p-2 w-full border rounded"
+                      className={`mt-1 p-2 w-full border rounded ${getBorderClass(
+                        `form${index}_medicalConditions`
+                      )}`}
                     />
                     <p className="text-xs mt-2">
                       {`Please tell us about any medical information that might impact your adventure. (E.g. physical injuries, allergies, illnesses, SEN requirements, etc.)`}
@@ -403,7 +440,9 @@ export default function Register() {
                       value={form.schoolName}
                       onChange={(e) => handleChange(index, e)}
                       placeholder="School Name"
-                      className="mt-1 p-2 w-full border rounded"
+                      className={`mt-1 p-2 w-full border rounded ${getBorderClass(
+                        `form${index}_schoolName`
+                      )}`}
                     />
                     <p className="text-xs mt-2">
                       {`Please note that this does not have to be a Kings' School. All children are welcome.`}
@@ -438,6 +477,9 @@ export default function Register() {
                           })
                         }
                         name="allWeeks"
+                        className={`mx-1 rounded ${getBorderClass(
+                          `form${index}_weeks`
+                        )}`}
                       />{" "}
                       Attend All Weeks
                     </label>
@@ -458,6 +500,9 @@ export default function Register() {
                           name={`week${i}`}
                           checked={form.weeks.selectedWeeks[i]}
                           onChange={(e) => handleWeeksChange(index, i, e)}
+                          className={`mx-1 rounded ${getBorderClass(
+                            `form${index}_weeks`
+                          )}`}
                         />{" "}
                         {`Week ${i + 1} (${datesText[i]})`}
                       </label>
@@ -481,6 +526,7 @@ export default function Register() {
                               type="checkbox"
                               name={`day${i}${day}`}
                               value={day}
+                              className="rounded"
                               checked={form.weeks.daysOfWeek[i].includes(day)}
                               onChange={(e) =>
                                 handleWeeksChange(index, i, {
@@ -510,7 +556,9 @@ export default function Register() {
                   value={orderDetails.email}
                   onChange={handleOrderDetailsChange}
                   placeholder="Enter your email"
-                  className="mt-1 mb-3 p-2 w-full border rounded"
+                  className={`mt-1 mb-3 p-2 w-full border rounded ${getBorderClass(
+                    "email"
+                  )}`}
                 />
               </label>
               <label>
@@ -522,7 +570,9 @@ export default function Register() {
                   value={orderDetails.emergencyContact1Name}
                   onChange={handleOrderDetailsChange}
                   placeholder="Enter Name of first Parent / Guardian"
-                  className="mb-3 p-2 w-full border rounded"
+                  className={`mb-3 p-2 w-full border rounded ${getBorderClass(
+                    "emergencyContact1Name"
+                  )}`}
                 />
               </label>
               <label>
@@ -534,7 +584,9 @@ export default function Register() {
                   value={orderDetails.emergencyContact1Phone}
                   onChange={handleOrderDetailsChange}
                   placeholder="Enter Contact of first Parent / Guardian (with country code)"
-                  className="mb-3 p-2 w-full border rounded"
+                  className={`mb-3 p-2 w-full border rounded ${getBorderClass(
+                    "emergencyContact1Phone"
+                  )}`}
                 />
               </label>
               <label>
@@ -546,7 +598,9 @@ export default function Register() {
                   value={orderDetails.emergencyContact2Name}
                   onChange={handleOrderDetailsChange}
                   placeholder="Enter Name of second Parent / Guardian"
-                  className="mb-3 p-2 w-full border rounded"
+                  className={`mb-3 p-2 w-full border rounded ${getBorderClass(
+                    "emergencyContact2Name"
+                  )}`}
                 />
               </label>
               <label>
@@ -558,15 +612,24 @@ export default function Register() {
                   value={orderDetails.emergencyContact2Phone}
                   onChange={handleOrderDetailsChange}
                   placeholder="Enter Contact of second Parent / Guardian (with country code)"
-                  className="mb-1 p-2 w-full border rounded"
+                  className={`mb-1 p-2 w-full border rounded ${getBorderClass(
+                    "emergencyContact2Phone"
+                  )}`}
                 />
               </label>
-              <label className="block font-medium my-4">
+              <label
+                className={`block font-medium my-4 ${getBorderClass(
+                  "termsAndConditions"
+                )}`}
+              >
                 <input
                   type="checkbox"
                   name="termsAndConditions"
                   checked={orderDetails.termsAndConditions}
                   onChange={handleOrderDetailsChange}
+                  className={`mx-1 rounded ${getBorderClass(
+                    "termsAndConditions"
+                  )}`}
                 />{" "}
                 I have read, understood and agree to the{" "}
                 <a
@@ -579,23 +642,37 @@ export default function Register() {
                 </a>{" "}
                 <span className="text-red-500">*</span>
               </label>
-              <label className="block font-medium">
+              <label
+                className={`block font-medium ${getBorderClass(
+                  "orderConfirmation"
+                )}`}
+              >
                 <input
                   type="checkbox"
                   name="orderConfirmation"
                   checked={orderDetails.orderConfirmation}
                   onChange={handleOrderDetailsChange}
+                  className={`mx-1 rounded ${getBorderClass(
+                    "orderConfirmation"
+                  )}`}
                 />
                 {` I understand that payment must be made within 3 hours of submitting the registration, otherwise the booking will be automatically cancelled by the system. `}
                 <span className="text-red-500">*</span>
               </label>
               <br></br>
-              <label className="block font-medium">
+              <label
+                className={`block font-medium ${getBorderClass(
+                  "bookingConfirmation"
+                )}`}
+              >
                 <input
                   type="checkbox"
                   name="bookingConfirmation"
                   checked={orderDetails.bookingConfirmation}
                   onChange={handleOrderDetailsChange}
+                  className={`mx-1 rounded ${getBorderClass(
+                    "bookingConfirmation"
+                  )}`}
                 />
                 {` You should receive a booking confirmation email automatically after completing registration and payment. If you haven't received this within 24hrs, please let us know. `}
                 <span className="text-red-500">*</span>
