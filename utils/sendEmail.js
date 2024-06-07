@@ -72,9 +72,9 @@ const getHtmlConfirmationEmailContent = (order) => {
 
   let attendeesDetails =
     '<table style="width: 100%; border-collapse: collapse;">';
-  let totalSum = 0;
+  let subtotal = 0;
 
-  order.attendees.forEach((attendee, index) => {
+  order.attendees.forEach((attendee) => {
     attendeesDetails += `<tr><td colspan="3"><strong>${attendee.firstName} ${attendee.lastName} - ${attendee.program}</strong></td></tr>`;
 
     if (attendee.weeks.allWeeks) {
@@ -95,22 +95,19 @@ const getHtmlConfirmationEmailContent = (order) => {
     }
 
     let attendeeTotal = attendee.priceDetails.price;
-    attendeesDetails += `<tr><td></td><td style="text-align:right;"><strong>Subtotal:</strong></td><td style="text-align: right;">AED ${attendeeTotal.toFixed(
-      2
-    )}</td></tr>`;
-    totalSum += attendeeTotal;
+    subtotal += attendeeTotal;
   });
 
-  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Subtotal:</strong></td><td style="text-align: right;">AED ${totalSum.toFixed(
+  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Subtotal:</strong></td><td style="text-align: right;">AED ${subtotal.toFixed(
     2
   )}</td></tr>`;
 
   if (order.promoCode) {
     const discountAmount =
       order.discountType === "percentage"
-        ? (totalSum * order.discount) / 100
+        ? (subtotal * order.discount) / 100
         : order.discount;
-    totalSum -= discountAmount;
+    subtotal -= discountAmount;
     attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Promo Code (${
       order.promoCode
     }) Discount:</strong></td><td style="text-align: right;">AED ${discountAmount.toFixed(
@@ -118,7 +115,7 @@ const getHtmlConfirmationEmailContent = (order) => {
     )}</td></tr>`;
   }
 
-  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Total:</strong></td><td style="text-align: right;">AED ${totalSum.toFixed(
+  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Total:</strong></td><td style="text-align: right;">AED ${subtotal.toFixed(
     2
   )}</td></tr>`;
   attendeesDetails += "</table>";
@@ -126,7 +123,7 @@ const getHtmlConfirmationEmailContent = (order) => {
   htmlTemplate = htmlTemplate.replace("{{order_id}}", order._id.toString());
   htmlTemplate = htmlTemplate.replace("{{location}}", order.location);
   htmlTemplate = htmlTemplate.replace("{{attendeesDetails}}", attendeesDetails);
-  htmlTemplate = htmlTemplate.replace("{{total}}", totalSum.toFixed(2));
+  htmlTemplate = htmlTemplate.replace("{{total}}", subtotal.toFixed(2));
 
   console.log(order.location);
   switch (order.location) {
