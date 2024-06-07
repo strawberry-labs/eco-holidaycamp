@@ -7,6 +7,13 @@ import Head from "next/head";
 export default function Register() {
   const [loading, setLoading] = useState(false);
   const [invalidFields, setInvalidFields] = useState({});
+  const [promoCode, setPromoCode] = useState("");
+  const [promoCodeError, setPromoCodeError] = useState("");
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+
   const router = useRouter();
   const { quantity, type } = router.query;
   const [forms, setForms] = useState([]);
@@ -64,8 +71,15 @@ export default function Register() {
     );
   }, [quantity, type]);
 
+  useEffect(() => {
+    setTotalPrice(
+      forms.reduce((total, form) => total + form.priceDetails.price, 0)
+    );
+  }, [forms]);
+
   const emailRegex =
     /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g;
+
   const phoneRegex = /\+?\d+/;
   const fullNameRegex = /^[\p{L}\s'-]+$/u;
 
@@ -84,8 +98,8 @@ export default function Register() {
       updatedForms[index].toiletTrained = false;
       updatedForms[index].attendedOneTerm = false;
     }
-    console.log(updatedForms);
 
+    updatedForms[index].priceDetails = calculatePrice(updatedForms[index]);
     setForms(updatedForms);
   };
 
@@ -134,7 +148,6 @@ export default function Register() {
     }
     updatedForms[index].priceDetails = calculatePrice(updatedForms[index]);
     setForms(updatedForms);
-    console.log(forms);
   };
 
   const calculatePrice = (form) => {
@@ -219,15 +232,22 @@ export default function Register() {
           0
         );
 
+        // Apply discount if any
+        const finalAmount =
+          discountType === "percentage"
+            ? orderAmount - (orderAmount * discount) / 100
+            : orderAmount - discount;
+
         const response = await fetch("/api/submitOrder", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            orderAmount,
+            orderAmount: finalAmount,
             orderDetails,
             forms,
+            promoCode,
           }),
         });
 
@@ -252,6 +272,50 @@ export default function Register() {
         `Please check your entries and make sure all required fields are filled correctly.`
       );
     }
+  };
+
+  const handleApplyPromoCode = async () => {
+    if (!promoCode) {
+      setPromoCodeError("Please enter a promo code.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/checkPromoCode", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code: promoCode }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDiscount(data.discount);
+        setDiscountType(data.discountType);
+        setPromoApplied(true);
+        setPromoCodeError("");
+      } else {
+        const { message } = await response.json();
+        setPromoCodeError(message);
+        setPromoApplied(false);
+      }
+    } catch (error) {
+      console.log(error);
+      setPromoCodeError("Server error. Please try again later.");
+      setPromoApplied(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemovePromoCode = () => {
+    setPromoCode("");
+    setDiscount(0);
+    setDiscountType("");
+    setPromoApplied(false);
+    setPromoCodeError("");
   };
 
   const getBorderClass = (field) =>
@@ -704,14 +768,60 @@ export default function Register() {
               ))}
             </div>
 
-            {/* Fixed Button at the Bottom */}
+            {/* Fixed Promo Code and Pay Button at the Bottom */}
             <div className="mt-auto">
-              <p className="text-lg font-bold mt-6 mb-2">
+              <div className="mt-2 mb-2">
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                    placeholder="Enter promo code"
+                    className="mt-1 p-2 w-full border rounded"
+                    disabled={promoApplied}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleApplyPromoCode();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={
+                      promoApplied
+                        ? handleRemovePromoCode
+                        : handleApplyPromoCode
+                    }
+                    className={`ml-2 font-bold py-2 px-4 rounded ${
+                      promoApplied
+                        ? "bg-red-500 hover:bg-red-700 text-white"
+                        : "bg-blue-500 hover:bg-blue-700 text-white"
+                    }`}
+                  >
+                    {promoApplied ? "Remove" : "Apply"}
+                  </button>
+                </div>
+                {
+                  <p
+                    className={`mt-1 ${
+                      promoApplied ? "text-black" : "text-red-500"
+                    }`}
+                  >
+                    {promoApplied
+                      ? discountType === "percentage"
+                        ? `AED ${
+                            (totalPrice * discount) / 100
+                          } OFF! (${discount}% discount)`
+                        : `AED ${discount} OFF!`
+                      : promoCodeError}
+                  </p>
+                }
+              </div>
+              <p className="text-lg font-bold mt-2 mb-2">
                 Total Price: AED{" "}
-                {forms.reduce(
-                  (total, form) => total + form.priceDetails.price,
-                  0
-                )}
+                {discountType === "percentage"
+                  ? totalPrice - (totalPrice * discount) / 100
+                  : totalPrice - discount}
               </p>
               <button
                 onClick={handleSubmit}
@@ -727,16 +837,15 @@ export default function Register() {
           <div className="flex justify-between items-center">
             <p className="text-lg font-bold">
               Total: AED{" "}
-              {forms.reduce(
-                (total, form) => total + form.priceDetails.price,
-                0
-              )}
+              {discountType === "percentage"
+                ? totalPrice - (totalPrice * discount) / 100
+                : totalPrice - discount}
             </p>
             <button
               onClick={() => setIsPriceExpanded(!isPriceExpanded)}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-              {isPriceExpanded ? "Hide Details" : "View Details"}
+              {isPriceExpanded ? "Hide Details" : "Summary"}
             </button>
           </div>
           {isPriceExpanded && (
@@ -773,10 +882,56 @@ export default function Register() {
               ))}
             </div>
           )}
-          {/* Keep the Proceed to Payment button in the sticky bottom panel */}
+
+          <div className="mt-2 mb-2">
+            <div className="flex items-center">
+              <input
+                type="text"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                placeholder="Enter promo code"
+                className="mt-1 p-2 w-full border rounded"
+                disabled={promoApplied}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleApplyPromoCode();
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={
+                  promoApplied ? handleRemovePromoCode : handleApplyPromoCode
+                }
+                className={`ml-4 font-bold py-2 px-[1.9em] rounded ${
+                  promoApplied
+                    ? "bg-red-500 hover:bg-red-700 text-white"
+                    : "bg-blue-500 hover:bg-blue-700 text-white"
+                }`}
+              >
+                {promoApplied ? "Remove" : "Apply"}
+              </button>
+            </div>
+            {
+              <p
+                className={`mt-1 ${
+                  promoApplied ? "text-black" : "text-red-500"
+                }`}
+              >
+                {promoApplied
+                  ? discountType === "percentage"
+                    ? `AED ${
+                        (totalPrice * discount) / 100
+                      } OFF! (${discount}% discount)`
+                    : `AED ${discount} OFF!`
+                  : promoCodeError}
+              </p>
+            }
+          </div>
+
           <button
             onClick={handleSubmit}
-            className="bg-yellow-500 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded w-full mt-4"
+            className="bg-yellow-500 hover:bg-yellow-700 text-black font-bold py-2 px-4 rounded w-full mt-2"
           >
             Proceed to Payment
           </button>

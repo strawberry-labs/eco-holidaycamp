@@ -19,6 +19,9 @@ const orderSchema = new mongoose.Schema({
   createdTime: { type: Date, default: Date.now },
   lastModifiedTime: { type: Date, default: Date.now },
   attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: "Attendee" }],
+  promoCode: { type: String, default: null },
+  discount: { type: Number, default: null },
+  discountType: { type: String, enum: ["percentage", "flat"], default: null },
 });
 
 export default mongoose.models.Order || mongoose.model("Order", orderSchema);

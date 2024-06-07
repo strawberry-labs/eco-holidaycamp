@@ -101,7 +101,24 @@ const getHtmlConfirmationEmailContent = (order) => {
     totalSum += attendeeTotal;
   });
 
-  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Total Price:</strong></td><td style="text-align: right;">AED ${totalSum.toFixed(
+  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Subtotal:</strong></td><td style="text-align: right;">AED ${totalSum.toFixed(
+    2
+  )}</td></tr>`;
+
+  if (order.promoCode) {
+    const discountAmount =
+      order.discountType === "percentage"
+        ? (totalSum * order.discount) / 100
+        : order.discount;
+    totalSum -= discountAmount;
+    attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Promo Code (${
+      order.promoCode
+    }) Discount:</strong></td><td style="text-align: right;">AED ${discountAmount.toFixed(
+      2
+    )}</td></tr>`;
+  }
+
+  attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Total:</strong></td><td style="text-align: right;">AED ${totalSum.toFixed(
     2
   )}</td></tr>`;
   attendeesDetails += "</table>";

@@ -2,6 +2,7 @@ import CryptoJS from "crypto-js";
 import dbConnect from "../../utils/dbConnect"; // Ensure this utility is correctly set up
 import Order from "../../models/OrderModel"; // Include the Order model
 import Attendee from "../../models/AttendeeModel"; // Include the Attendee model
+import PromoCode from "../../models/PromoCodeModel"; // Include the PromoCode model
 import { sendBookingPendingEmail } from "../../utils/sendEmail";
 
 export default async function handler(req, res) {
@@ -10,7 +11,54 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     try {
       // Extract data from request body
-      const { orderAmount, orderDetails, forms: attendees } = req.body;
+      const {
+        orderDetails,
+        forms: attendees,
+        promoCode: providedPromoCode,
+      } = req.body;
+
+      let discount = 0;
+      let discountType = "";
+      let promoCode;
+
+      // Validate promo code if provided
+      if (providedPromoCode) {
+        promoCode = await PromoCode.findOne({ code: providedPromoCode });
+
+        if (!promoCode || !promoCode.isActive) {
+          return res
+            .status(400)
+            .json({ message: "Invalid or inactive promo code." });
+        }
+
+        if (promoCode.expirationDate && promoCode.expirationDate < new Date()) {
+          return res.status(400).json({ message: "Promo code has expired." });
+        }
+
+        if (promoCode.type === "one-time" && promoCode.usedBy.length > 0) {
+          return res
+            .status(400)
+            .json({ message: "Promo code has already been used." });
+        }
+
+        discount = promoCode.discount;
+        discountType = promoCode.discountType;
+      }
+
+      // Calculate the order amount from the forms
+      const orderAmount = attendees.reduce(
+        (total, form) => total + form.priceDetails.price,
+        0
+      );
+
+      // Calculate final order amount with discount if applicable
+      let finalAmount = orderAmount;
+      if (discountType === "percentage") {
+        finalAmount = orderAmount - (orderAmount * discount) / 100;
+      } else if (discountType === "flat") {
+        finalAmount = orderAmount - discount;
+      }
+      finalAmount = parseFloat(finalAmount).toFixed(2);
 
       // Create attendees in the database
       const createdAttendees = await Attendee.insertMany(attendees);
@@ -26,18 +74,20 @@ export default async function handler(req, res) {
         ...orderDetails,
         attendees: attendeeIds,
         status: status,
+        promoCode: providedPromoCode,
+        discount: discount,
+        discountType: discountType,
       }).save();
 
       // Use the MongoDB order ID for the transaction
       const orderNumber = newOrder._id.toString();
-      const formattedAmount = parseFloat(orderAmount).toFixed(2);
       const orderCurrency = "AED";
       const orderDescription = newOrder.location;
 
       // Compute the hash
       const toMD5 =
         orderNumber +
-        formattedAmount +
+        finalAmount +
         orderCurrency +
         orderDescription +
         process.env.TOTALPAY_SECRET;
@@ -52,7 +102,7 @@ export default async function handler(req, res) {
         methods: ["card"],
         order: {
           number: orderNumber,
-          amount: formattedAmount,
+          amount: finalAmount,
           currency: orderCurrency,
           description: orderDescription,
         },
@@ -93,6 +143,13 @@ export default async function handler(req, res) {
             orderNumber,
             jsonResponse.redirect_url
           );
+
+          // Update promo code usage if valid
+          if (promoCode) {
+            promoCode.usedBy.push(newOrder._id);
+            await promoCode.save();
+          }
+
           // Send redirect URL back to client
           res.status(200).json({ redirect_url: jsonResponse.redirect_url });
         } else {
