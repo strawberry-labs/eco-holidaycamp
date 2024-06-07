@@ -851,7 +851,7 @@ export default function Register() {
           {isPriceExpanded && (
             <div
               className="fixed inset-0 bg-white p-4 overflow-y-auto z-20"
-              style={{ top: "4rem", bottom: "8rem" }}
+              style={{ top: "4rem", bottom: "4rem" }}
             >
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-lg font-bold mt-2">Price Breakdown</h3>
