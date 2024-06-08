@@ -74,9 +74,9 @@ export default async function handler(req, res) {
         ...orderDetails,
         attendees: attendeeIds,
         status: status,
-        promoCode: providedPromoCode,
-        discount: discount,
-        discountType: discountType,
+        promoCode: providedPromoCode ? providedPromoCode : null,
+        discount: discount ? discount : null,
+        discountType: discountType ? discountType : null,
       }).save();
 
       // Use the MongoDB order ID for the transaction
