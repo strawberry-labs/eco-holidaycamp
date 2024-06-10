@@ -84,6 +84,8 @@ export default async function handler(req, res) {
       const orderCurrency = "AED";
       const orderDescription = newOrder.location;
 
+      const nameForPG = processName(orderDetails.emergencyContact1Name);
+
       // Compute the hash
       const toMD5 =
         orderNumber +
@@ -109,7 +111,7 @@ export default async function handler(req, res) {
         cancel_url: `${process.env.PUBLIC_BASE_URL}/cancel`,
         success_url: `${process.env.PUBLIC_BASE_URL}/success?orderId=${orderNumber}`,
         customer: {
-          name: orderDetails.emergencyContact1Name,
+          name: nameForPG,
           email: orderDetails.email,
         },
         billing_address: {
@@ -173,4 +175,12 @@ export default async function handler(req, res) {
     res.setHeader("Allow", ["POST"]);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
+}
+
+function processName(name) {
+  // Remove any special characters except spaces
+  let cleanName = name.replace(/[^a-zA-Z\s]/g, "");
+
+  // Return the first two words joined by a space, or the whole clean name if it has less than 2 words
+  return cleanName;
 }
