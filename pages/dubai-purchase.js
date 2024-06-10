@@ -163,8 +163,8 @@ export default function Register() {
           let weekCost = 0;
           let weekDetails = [];
           if (form.weeks.daysOfWeek[weekIndex].length === 5) {
-            weekCost = 750; // Full week price
-            weekDetails.push({ description: "Full week", cost: 750 });
+            weekCost = 850; // Full week price
+            weekDetails.push({ description: "Full week", cost: 850 });
           } else {
             form.weeks.daysOfWeek[weekIndex].forEach((day) => {
               weekCost += 200;
