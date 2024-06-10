@@ -155,8 +155,8 @@ export default function Register() {
     let details = [];
 
     if (form.weeks.allWeeks) {
-      price = 4100;
-      details.push({ description: "All weeks", cost: 4100 });
+      price = 4500;
+      details.push({ description: "All weeks", cost: 4500 });
     } else {
       form.weeks.selectedWeeks.forEach((selected, weekIndex) => {
         if (selected) {
