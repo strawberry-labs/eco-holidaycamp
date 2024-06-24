@@ -10,7 +10,7 @@ export default function Home() {
   const handleBuyClick = () => {
     router.push({
       pathname: "/barsha-purchase",
-      query: { type: "Early Bird Ticket", quantity: selectedQuantity },
+      query: { type: "Regular Ticket", quantity: selectedQuantity },
     });
   };
 
@@ -87,7 +87,7 @@ export default function Home() {
             <div className="flex flex-col gap-4">
               <div className="flex mt-4 justify-between items-center">
                 <p>
-                  <strong>{`Early Bird Ticket `}</strong>
+                  <strong>{`Regular Ticket `}</strong>
                   {`(Offer Valid till 23rd June!)`}
                 </p>
                 <select
