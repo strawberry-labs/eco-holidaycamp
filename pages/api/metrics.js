@@ -10,8 +10,6 @@ export default async function handler(req, res) {
   try {
     if (req.method === "GET") {
       if (req.headers["api_key"] !== process.env.API_KEY) {
-        console.log(req.headers["api_key"]);
-        console.log(process.env.API_KEY);
         return res
           .status(401)
           .json({ success: false, message: "Unauthorized" });
@@ -19,32 +17,22 @@ export default async function handler(req, res) {
 
       await dbConnect();
 
-      // Fetch all paid orders
       const paidOrders = await Order.find({ status: "PAID" });
-
-      // Extract attendee IDs from paid orders
       const attendeeIds = paidOrders.flatMap((order) => order.attendees);
-
-      // Total number of attendees from paid orders
       const totalAttendees = await Attendee.countDocuments({
         _id: { $in: attendeeIds },
       });
-
-      // Total number of paid orders
       const totalOrders = paidOrders.length;
 
-      // Total revenue generated from successful sale payments
       const totalRevenue = await Payment.aggregate([
         { $match: { status: "success", type: "sale" } },
         { $group: { _id: null, totalAmount: { $sum: "$order_amount" } } },
       ]);
 
-      // Number of orders by status (for any status)
       const ordersByStatus = await Order.aggregate([
         { $group: { _id: "$status", count: { $sum: 1 } } },
       ]);
 
-      // Revenue by date
       const revenueByDate = await Payment.aggregate([
         { $match: { status: "success", type: "sale" } },
         {
@@ -63,7 +51,6 @@ export default async function handler(req, res) {
         { $sort: { date: 1 } },
       ]);
 
-      // Revenue by location
       const revenueByLocation = await Order.aggregate([
         { $match: { status: "PAID" } },
         {
@@ -103,7 +90,6 @@ export default async function handler(req, res) {
         { $sort: { location: 1 } },
       ]);
 
-      // Attendee count by location, activity selection, and age group
       const attendeeCountByLocationAndActivity = await Order.aggregate([
         { $match: { status: "PAID" } },
         {
@@ -111,18 +97,21 @@ export default async function handler(req, res) {
             from: "attendees",
             localField: "attendees",
             foreignField: "_id",
-            as: "attendeesDetails",
+            as: "attendeeDetails",
           },
         },
-        { $unwind: "$attendeesDetails" },
+        { $unwind: "$attendeeDetails" },
         {
           $group: {
             _id: {
               location: "$location",
-              activitySelection: "$attendeesDetails.activitySelection",
-              ageGroup: "$attendeesDetails.ageGroup",
+              activitySelection: "$attendeeDetails.activitySelection",
+              ageGroup: "$attendeeDetails.ageGroup",
             },
             count: { $sum: 1 },
+            weeks: {
+              $push: "$attendeeDetails.weeks.selectedWeeks",
+            },
           },
         },
         {
@@ -132,10 +121,40 @@ export default async function handler(req, res) {
             activitySelection: "$_id.activitySelection",
             ageGroup: "$_id.ageGroup",
             count: 1,
+            weeks: 1,
           },
         },
-        { $sort: { location: 1, activitySelection: 1, ageGroup: 1 } },
       ]);
+
+      const processedAttendeeCount = attendeeCountByLocationAndActivity.map(
+        (item) => {
+          const weekCounts = item.weeks.reduce(
+            (acc, weeks) => {
+              weeks.forEach((selected, index) => {
+                if (selected) {
+                  acc[`week${index + 1}`] += 1;
+                }
+              });
+              return acc;
+            },
+            {
+              week1: 0,
+              week2: 0,
+              week3: 0,
+              week4: 0,
+              week5: 0,
+              week6: 0,
+            }
+          );
+          return {
+            location: item.location,
+            activitySelection: item.activitySelection,
+            ageGroup: item.ageGroup,
+            count: item.count,
+            data: weekCounts,
+          };
+        }
+      );
 
       const metrics = {
         totalAttendees,
@@ -144,7 +163,7 @@ export default async function handler(req, res) {
         ordersByStatus,
         revenueByDate,
         revenueByLocation,
-        attendeeCountByLocationAndActivity,
+        attendeeCountByLocationAndActivity: processedAttendeeCount,
       };
 
       res.status(200).json(metrics);
