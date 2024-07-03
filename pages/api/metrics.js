@@ -103,6 +103,40 @@ export default async function handler(req, res) {
         { $sort: { location: 1 } },
       ]);
 
+      // Attendee count by location, activity selection, and age group
+      const attendeeCountByLocationAndActivity = await Order.aggregate([
+        { $match: { status: "PAID" } },
+        {
+          $lookup: {
+            from: "attendees",
+            localField: "attendees",
+            foreignField: "_id",
+            as: "attendeesDetails",
+          },
+        },
+        { $unwind: "$attendeesDetails" },
+        {
+          $group: {
+            _id: {
+              location: "$location",
+              activitySelection: "$attendeesDetails.activitySelection",
+              ageGroup: "$attendeesDetails.ageGroup",
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            location: "$_id.location",
+            activitySelection: "$_id.activitySelection",
+            ageGroup: "$_id.ageGroup",
+            count: 1,
+          },
+        },
+        { $sort: { location: 1, activitySelection: 1, ageGroup: 1 } },
+      ]);
+
       const metrics = {
         totalAttendees,
         totalOrders,
@@ -110,6 +144,7 @@ export default async function handler(req, res) {
         ordersByStatus,
         revenueByDate,
         revenueByLocation,
+        attendeeCountByLocationAndActivity,
       };
 
       res.status(200).json(metrics);
