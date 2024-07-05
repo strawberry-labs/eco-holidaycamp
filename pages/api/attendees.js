@@ -62,6 +62,25 @@ export default async function handler(req, res) {
             week6: {
               $arrayElemAt: ["$attendeeDetails.weeks.selectedWeeks", 5],
             },
+            week1Days: {
+              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 0],
+            },
+            week2Days: {
+              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 1],
+            },
+            week3Days: {
+              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 2],
+            },
+            week4Days: {
+              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 3],
+            },
+            week5Days: {
+              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 4],
+            },
+            week6Days: {
+              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 5],
+            },
+
             orderId: "$_id",
             orderLocation: "$location",
             orderEmail: "$email",
