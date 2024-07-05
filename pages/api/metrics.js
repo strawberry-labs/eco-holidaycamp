@@ -25,9 +25,31 @@ export default async function handler(req, res) {
       const totalOrders = paidOrders.length;
 
       const totalRevenue = await Payment.aggregate([
-        { $match: { status: "success", type: "sale" } },
-        { $group: { _id: null, totalAmount: { $sum: "$order_amount" } } },
+        {
+          $facet: {
+            sales: [
+              { $match: { status: "success", type: "sale" } },
+              { $group: { _id: null, totalAmount: { $sum: "$order_amount" } } },
+            ],
+            refunds: [
+              { $match: { status: "success", type: "refund" } },
+              { $group: { _id: null, totalAmount: { $sum: "$order_amount" } } },
+            ],
+          },
+        },
+        {
+          $project: {
+            totalAmount: {
+              $subtract: [
+                { $arrayElemAt: ["$sales.totalAmount", 0] },
+                { $arrayElemAt: ["$refunds.totalAmount", 0] },
+              ],
+            },
+          },
+        },
       ]);
+
+      console.log(totalRevenue);
 
       const ordersByStatus = await Order.aggregate([
         { $group: { _id: "$status", count: { $sum: 1 } } },
@@ -64,7 +86,7 @@ export default async function handler(req, res) {
                     $and: [
                       { $eq: ["$order_number", "$$order_id"] },
                       { $eq: ["$status", "success"] },
-                      { $eq: ["$type", "sale"] },
+                      { $in: ["$type", ["sale", "refund"]] },
                     ],
                   },
                 },
@@ -76,15 +98,33 @@ export default async function handler(req, res) {
         { $unwind: "$payments" },
         {
           $group: {
-            _id: "$location",
+            _id: {
+              location: "$location",
+              type: "$payments.type",
+            },
             totalAmount: { $sum: "$payments.order_amount" },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id.location",
+            totalSales: {
+              $sum: {
+                $cond: [{ $eq: ["$_id.type", "sale"] }, "$totalAmount", 0],
+              },
+            },
+            totalRefunds: {
+              $sum: {
+                $cond: [{ $eq: ["$_id.type", "refund"] }, "$totalAmount", 0],
+              },
+            },
           },
         },
         {
           $project: {
             _id: 0,
             location: "$_id",
-            totalAmount: 1,
+            totalAmount: { $subtract: ["$totalSales", "$totalRefunds"] },
           },
         },
         { $sort: { location: 1 } },
