@@ -63,22 +63,220 @@ export default async function handler(req, res) {
               $arrayElemAt: ["$attendeeDetails.weeks.selectedWeeks", 5],
             },
             week1Days: {
-              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 0],
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $size: {
+                        $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 0],
+                      },
+                    },
+                    5,
+                  ],
+                },
+                then: "Week Pass",
+                else: {
+                  $reduce: {
+                    input: {
+                      $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 0],
+                    },
+                    initialValue: "",
+                    in: {
+                      $concat: [
+                        "$$value",
+                        {
+                          $cond: {
+                            if: { $eq: ["$$value", ""] },
+                            then: "",
+                            else: ", ",
+                          },
+                        },
+                        "$$this",
+                      ],
+                    },
+                  },
+                },
+              },
             },
             week2Days: {
-              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 1],
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $size: {
+                        $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 1],
+                      },
+                    },
+                    5,
+                  ],
+                },
+                then: "Week Pass",
+                else: {
+                  $reduce: {
+                    input: {
+                      $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 1],
+                    },
+                    initialValue: "",
+                    in: {
+                      $concat: [
+                        "$$value",
+                        {
+                          $cond: {
+                            if: { $eq: ["$$value", ""] },
+                            then: "",
+                            else: ", ",
+                          },
+                        },
+                        "$$this",
+                      ],
+                    },
+                  },
+                },
+              },
             },
             week3Days: {
-              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 2],
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $size: {
+                        $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 2],
+                      },
+                    },
+                    5,
+                  ],
+                },
+                then: "Week Pass",
+                else: {
+                  $reduce: {
+                    input: {
+                      $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 2],
+                    },
+                    initialValue: "",
+                    in: {
+                      $concat: [
+                        "$$value",
+                        {
+                          $cond: {
+                            if: { $eq: ["$$value", ""] },
+                            then: "",
+                            else: ", ",
+                          },
+                        },
+                        "$$this",
+                      ],
+                    },
+                  },
+                },
+              },
             },
             week4Days: {
-              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 3],
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $size: {
+                        $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 3],
+                      },
+                    },
+                    5,
+                  ],
+                },
+                then: "Week Pass",
+                else: {
+                  $reduce: {
+                    input: {
+                      $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 3],
+                    },
+                    initialValue: "",
+                    in: {
+                      $concat: [
+                        "$$value",
+                        {
+                          $cond: {
+                            if: { $eq: ["$$value", ""] },
+                            then: "",
+                            else: ", ",
+                          },
+                        },
+                        "$$this",
+                      ],
+                    },
+                  },
+                },
+              },
             },
             week5Days: {
-              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 4],
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $size: {
+                        $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 4],
+                      },
+                    },
+                    5,
+                  ],
+                },
+                then: "Week Pass",
+                else: {
+                  $reduce: {
+                    input: {
+                      $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 4],
+                    },
+                    initialValue: "",
+                    in: {
+                      $concat: [
+                        "$$value",
+                        {
+                          $cond: {
+                            if: { $eq: ["$$value", ""] },
+                            then: "",
+                            else: ", ",
+                          },
+                        },
+                        "$$this",
+                      ],
+                    },
+                  },
+                },
+              },
             },
             week6Days: {
-              $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 5],
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $size: {
+                        $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 5],
+                      },
+                    },
+                    5,
+                  ],
+                },
+                then: "Week Pass",
+                else: {
+                  $reduce: {
+                    input: {
+                      $arrayElemAt: ["$attendeeDetails.weeks.daysOfWeek", 5],
+                    },
+                    initialValue: "",
+                    in: {
+                      $concat: [
+                        "$$value",
+                        {
+                          $cond: {
+                            if: { $eq: ["$$value", ""] },
+                            then: "",
+                            else: ", ",
+                          },
+                        },
+                        "$$this",
+                      ],
+                    },
+                  },
+                },
+              },
             },
 
             orderId: "$_id",

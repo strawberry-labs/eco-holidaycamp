@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Grouping Information</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        color: #333;
+      }
+      .header img {
+        width: 100%;
+      }
+
+      .header .camp-title {
+        color: #f7931e;
+        font-weight: bold;
+        font-size: larger;
+      }
+      .details {
+        margin-top: 20px;
+      }
+      .details p {
+        margin: 10px 0;
+      }
+      .italic-grey {
+        color: grey;
+        font-style: italic;
+      }
+      .team {
+        color: #d35400;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <img
+        src="https://cdn.strawberrylabs.net/strawberrylabs/ecoventure-main-logo.png"
+        alt="Ecoventure Logo"
+      />
+      <div>
+        <p class="camp-title">Summer Holiday Camp '24 - {{location}}</p>
+        <p><strong>July 8th - August 16th, 2024</strong></p>
+        <p><strong>📍 {{location}}</strong></p>
+        <br />
+      </div>
+    </div>
+    <div class="details">
+      <p>Dear {{emergencyContact1Name}},</p>
+      <br />
+      <p>
+        We hope you are well and your children are excited for camp next week!
+        Beforehand, we would like to share some pre-camp information to help you
+        prepare:
+      </p>
+      <br />
+      <p>
+        1. <strong>{{firstName}} {{lastName}}</strong> has been provisionally
+        placed in <strong>{{weekGroup}}</strong> for the week.
+      </p>
+      <p>
+        <span class="italic-grey"
+          >As the groupings are done primarily by age, it is not always possible
+          to meet all grouping requests particularly if the friends/siblings are
+          of different ages.</span
+        >
+      </p>
+      <br />
+      <p>
+        2. Drop-off is between 8:30 - 9:00 am. Pick-up is from 1:45 - 2:00 pm.
+      </p>
+      <p>
+        <span class="italic-grey"
+          >All parents/guardians need to drop off and pick up the children
+          to/from the classrooms directly. Please inform the group leader of any
+          alternative arrangements you may have for pick-up.</span
+        >
+      </p>
+      <br />
+      <p>
+        3. The schedule of activities will be available for you to check on
+        Monday in the reception area at drop-off.
+      </p>
+      <p>
+        <span class="italic-grey"
+          >Kindly note there will be no swimming scheduled for the Summer
+          camp.</span
+        >
+      </p>
+      <br />
+      <p>
+        4. We ask that all students bring 2 snacks and a packed lunch; please do
+        not pack any foods containing nuts. Please ensure your child also has a
+        refillable water bottle with them at all times.
+      </p>
+      <br />
+      <p>
+        5. All children are required to come dressed in comfortable clothing and
+        closed-toed shoes for activities.
+      </p>
+      <p>
+        <span class="italic-grey"
+          >We ask that all children below 5 years old bring a spare change of
+          clothes with them to camp.</span
+        >
+      </p>
+      <br />
+      <p>
+        6. We would like to politely request that children do not bring any
+        technological devices or toys to Camp, as this will help to eliminate
+        distractions during the activities.
+      </p>
+      <br />
+      <p>
+        7. The theme of week 1 is “X-marks the spot”, we would like to encourage
+        all of those who are attending on Friday to come dressed in their best
+        Pirate costume!
+      </p>
+      <br />
+      <p>
+        If you have any further questions, please do not hesitate to contact us.
+        We look forward to seeing you soon!
+      </p>
+      <br />
+      <p>Adventurous Regards,</p>
+      <p class="team">Ecoventure Team</p>
+    </div>
+  </body>
+</html>

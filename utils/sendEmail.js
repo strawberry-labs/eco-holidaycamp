@@ -195,3 +195,71 @@ export const sendBookingConfirmationEmail = async (orderId) => {
     throw new Error("Email sending failed");
   }
 };
+
+// Utility to read and process the HTML file for grouping email
+const getHtmlGroupingEmailContent = (
+  emergencyContact1Name,
+  attendee,
+  weekGroup,
+  location
+) => {
+  const filePath = path.join(
+    process.cwd(),
+    "templates",
+    "groupingEmailTemplate.html"
+  );
+  let htmlContent = fs.readFileSync(filePath, "utf8");
+  htmlContent = htmlContent.replace(
+    "{{emergencyContact1Name}}",
+    emergencyContact1Name
+  );
+  htmlContent = htmlContent.replace("{{firstName}}", attendee.firstName);
+  htmlContent = htmlContent.replace("{{lastName}}", attendee.lastName);
+  htmlContent = htmlContent.replace("{{weekGroup}}", weekGroup);
+  htmlContent = htmlContent.replace(/{{location}}/g, location);
+
+  return htmlContent;
+};
+
+// Send Grouping Email Function
+export const sendGroupingEmail = async (
+  emergencyContact1Name,
+  toEmail,
+  attendee,
+  weekGroup,
+  week,
+  location
+) => {
+  const htmlBody = getHtmlGroupingEmailContent(
+    emergencyContact1Name,
+    attendee,
+    weekGroup,
+    location
+  );
+
+  const params = {
+    Source: "Ecoventure Bookings <info@ecoventureme.com>",
+    Destination: {
+      ToAddresses: [toEmail],
+    },
+    Message: {
+      Subject: {
+        Data: `Holiday Camp Grouping | ${attendee.firstName} ${attendee.lastName} | Week ${week}`,
+      },
+      Body: {
+        Html: {
+          Data: htmlBody,
+        },
+      },
+    },
+  };
+
+  try {
+    const data = await ses.sendEmail(params).promise();
+    console.log("Grouping Email sent:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to send grouping email:", error);
+    throw new Error("Grouping email sending failed");
+  }
+};
