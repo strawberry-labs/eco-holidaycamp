@@ -88,7 +88,6 @@ export default function Home() {
               <div className="flex mt-4 justify-between items-center">
                 <p>
                   <strong>{`Regular Ticket `}</strong>
-                  {`(Offer Valid till 23rd June!)`}
                 </p>
                 <select
                   value={selectedQuantity}
