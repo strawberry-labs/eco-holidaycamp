@@ -126,6 +126,9 @@ export default function Register() {
       });
     } else if (name.startsWith("week")) {
       currentForm.selectedWeeks[weekIndex] = checked;
+      if (weekIndex === 0) {
+        currentForm.selectedWeeks[weekIndex] = false;
+      }
       if (checked) {
         currentForm.daysOfWeek[weekIndex] = [
           "Monday",
@@ -557,18 +560,23 @@ export default function Register() {
                       key={i}
                       className={`mt-2 ${form.weeks.allWeeks ? "hidden" : ""}`}
                     >
-                      <label className="block font-bold mb-1">
-                        <input
-                          type="checkbox"
-                          name={`week${i}`}
-                          checked={form.weeks.selectedWeeks[i]}
-                          onChange={(e) => handleWeeksChange(index, i, e)}
-                          className={`mx-1 rounded ${getBorderClass(
-                            `form${index}_weeks`
-                          )}`}
-                        />{" "}
+                      <input
+                        type="checkbox"
+                        name={`week${i}`}
+                        checked={form.weeks.selectedWeeks[i]}
+                        onChange={(e) => handleWeeksChange(index, i, e)}
+                        className={`mx-1 rounded ${getBorderClass(
+                          `form${index}_weeks`
+                        )}`}
+                        disabled={i === 0}
+                      />
+                      <label
+                        className="inline-block font-bold"
+                        style={{ color: i === 0 ? "lightgrey" : "inherit" }}
+                      >
                         {`Week ${i + 1} (${datesText[i]})`}
                       </label>
+
                       <div
                         className={`pl-4 grid grid-cols-5 gap-2 ${
                           form.weeks.selectedWeeks[i] ? "" : "hidden"

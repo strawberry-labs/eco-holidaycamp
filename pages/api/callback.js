@@ -108,8 +108,14 @@ export default async function handler(req, res) {
       } else {
         await payment.save();
 
+        const orderId = order_number;
+        const order = await Order.findById(orderId);
+
         // Check payment status and update order if settled
         if (status === "success" && type === "sale") {
+          if (order.status === "PAID") {
+            await sendBookingExtenstionConfirmationEmail(order_number);
+          }
           const updateResult = await Order.updateOne(
             { _id: order_number },
             {

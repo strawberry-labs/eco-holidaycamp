@@ -196,6 +196,40 @@ export const sendBookingConfirmationEmail = async (orderId) => {
   }
 };
 
+export const sendBookingExtensionConfirmationEmail = async (orderId) => {
+  await dbConnect();
+  const order = await Order.findById(orderId).populate("attendees");
+
+  const toEmail = order.email; // Assuming the email is stored directly in the order document
+  const htmlBody = getHtmlConfirmationEmailContent(order);
+
+  const params = {
+    Source: "Ecoventure Bookings <info@ecoventureme.com>",
+    Destination: {
+      ToAddresses: ["info@ecoventureme.com", "chirag@strawberrylabs.net"],
+    },
+    Message: {
+      Subject: {
+        Data: `Booking Extension Confirmation | ${orderId}`,
+      },
+      Body: {
+        Text: {
+          Data: `Booking extension with order number ${orderId} has been PAID.`,
+        },
+      },
+    },
+  };
+
+  try {
+    const data = await ses.sendEmail(params).promise();
+    console.log("Email sent:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    throw new Error("Email sending failed");
+  }
+};
+
 // Utility to read and process the HTML file for grouping email
 const getHtmlGroupingEmailContent = (
   emergencyContact1Name,
