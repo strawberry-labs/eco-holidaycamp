@@ -1,7 +1,10 @@
 import dbConnect from "../../utils/dbConnect";
 import Order from "../../models/OrderModel";
 import Payment from "../../models/PaymentModel";
-import { sendBookingConfirmationEmail } from "../../utils/sendEmail";
+import {
+  sendBookingConfirmationEmail,
+  sendBookingExtensionConfirmationEmail,
+} from "../../utils/sendEmail";
 import crypto from "crypto";
 
 export default async function handler(req, res) {
@@ -114,7 +117,7 @@ export default async function handler(req, res) {
         // Check payment status and update order if settled
         if (status === "success" && type === "sale") {
           if (order.status === "PAID") {
-            await sendBookingExtenstionConfirmationEmail(order_number);
+            await sendBookingExtensionConfirmationEmail(order_number);
           }
           const updateResult = await Order.updateOne(
             { _id: order_number },
