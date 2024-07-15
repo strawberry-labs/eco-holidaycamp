@@ -568,11 +568,13 @@ export default function Register() {
                         className={`mx-1 rounded ${getBorderClass(
                           `form${index}_weeks`
                         )}`}
-                        disabled={i === 0}
+                        disabled={i === 0 || i === 1}
                       />
                       <label
                         className="inline-block font-bold"
-                        style={{ color: i === 0 ? "lightgrey" : "inherit" }}
+                        style={{
+                          color: i === 0 || i === 1 ? "lightgrey" : "inherit",
+                        }}
                       >
                         {`Week ${i + 1} (${datesText[i]})`}
                       </label>
