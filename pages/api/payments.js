@@ -35,6 +35,11 @@ export default async function handler(req, res) {
                     "payee_city",
                     "payee_address",
                     "rrn",
+                    "approval_code",
+                    "card",
+                    "card_expiration_date",
+                    "payee_card",
+                    "card_token",
                     "customer_name",
                     "customer_email",
                     "customer_country",
@@ -56,45 +61,8 @@ export default async function handler(req, res) {
         } catch (error) {
             res.status(500).json({ success: false, message: error.message });
         }
-    } else if (req.method === "POST") {
-        const { paymentId, paymentDetails } = req.body
-
-        // Check for API key in the query parameters
-        if (req.headers["api_key"] !== process.env.API_KEY) {
-            console.log(req.headers["api_key"]);
-            console.log(process.env.API_KEY);
-            return res.status(401).json({ success: false, message: "Unauthorized" });
-        }
-
-        // Validate the input
-        if (!paymentId || !paymentDetails) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Missing parameters" });
-        }
-
-        try {
-            await dbConnect();
-
-            // Update the attendee's group information
-            const updatedPayment = await Attendee.findByIdAndUpdate(
-                paymentId,
-                { $set: paymentDetails },
-                { new: true }
-            );
-
-            if (!updatedPayment) {
-                return res
-                    .status(404)
-                    .json({ success: false, message: "Payment not found" });
-            }
-
-            res.status(200).json({ success: true, data: updatedPayment });
-        } catch (error) {
-            res.status(500).json({ success: false, message: error.message });
-        }
     } else {
-        res.setHeader("Allow", ["OPTIONS", "GET", "POST"]);
+        res.setHeader("Allow", ["OPTIONS", "GET"]);
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }
