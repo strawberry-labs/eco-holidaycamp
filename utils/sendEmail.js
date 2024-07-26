@@ -85,11 +85,10 @@ const getHtmlConfirmationEmailContent = (order) => {
       attendee.priceDetails.details.forEach((weekDetail) => {
         attendeesDetails += `<tr><td colspan="3">${weekDetail.week}</td></tr>`;
         weekDetail.details.forEach((detail) => {
-          attendeesDetails += `<tr><td style="padding-left: 20px;">${
-            detail.description
-          }</td><td style="text-align: right;">AED ${detail.cost.toFixed(
-            2
-          )}</td></tr>`;
+          attendeesDetails += `<tr><td style="padding-left: 20px;">${detail.description
+            }</td><td style="text-align: right;">AED ${detail.cost.toFixed(
+              2
+            )}</td></tr>`;
         });
       });
     }
@@ -108,11 +107,10 @@ const getHtmlConfirmationEmailContent = (order) => {
         ? (subtotal * order.discount) / 100
         : order.discount;
     subtotal -= discountAmount;
-    attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Promo Code (${
-      order.promoCode
-    }) Discount:</strong></td><td style="text-align: right;">AED ${discountAmount.toFixed(
-      2
-    )}</td></tr>`;
+    attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Promo Code (${order.promoCode
+      }) Discount:</strong></td><td style="text-align: right;">AED ${discountAmount.toFixed(
+        2
+      )}</td></tr>`;
   }
 
   attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Total:</strong></td><td style="text-align: right;">AED ${subtotal.toFixed(
@@ -196,12 +194,36 @@ export const sendBookingConfirmationEmail = async (orderId) => {
   }
 };
 
+const getHtmlExtensionEmailContent = (order) => {
+  const filePath = path.join(
+    process.cwd(),
+    "templates",
+    "bookingExtensionTemplate.html"
+  );
+  let htmlTemplate = fs.readFileSync(filePath, "utf8");
+
+  let customerDetails =
+    '<table style="width: 100%; border-collapse: collapse;">';
+
+  customerDetails += `<tr><td colspan="3"><strong>Name: ${order.emergencyContact1Name} </strong></td></tr>`;
+  customerDetails += `<tr><td colspan="3"><strong>Phone: ${order.emergencyContact1Phone} </strong></td></tr>`;
+  customerDetails += `<tr><td colspan="3"><strong>Email: ${order.email} </strong></td></tr>`;
+  customerDetails += `<tr><td colspan="3"><strong>Camp Location: ${order.location} </strong></td></tr>`;
+
+  customerDetails += "</table>";
+
+  htmlTemplate = htmlTemplate.replace("{{order_id}}", order._id.toString());
+  htmlTemplate = htmlTemplate.replace("{{location}}", order.location);
+  htmlTemplate = htmlTemplate.replace("{{customerDetails}}", customerDetails);
+
+  return htmlTemplate;
+};
+
 export const sendBookingExtensionConfirmationEmail = async (orderId) => {
   await dbConnect();
-  const order = await Order.findById(orderId).populate("attendees");
+  const order = await Order.findById(orderId);
 
-  const toEmail = order.email; // Assuming the email is stored directly in the order document
-  const htmlBody = getHtmlConfirmationEmailContent(order);
+  const htmlBody = getHtmlExtensionEmailContent(order);
 
   const params = {
     Source: "Ecoventure Bookings <info@ecoventureme.com>",
@@ -213,8 +235,8 @@ export const sendBookingExtensionConfirmationEmail = async (orderId) => {
         Data: `Booking Extension Confirmation | ${orderId}`,
       },
       Body: {
-        Text: {
-          Data: `Booking extension with order number ${orderId} has been PAID.`,
+        Html: {
+          Data: htmlBody,
         },
       },
     },
