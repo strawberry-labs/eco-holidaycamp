@@ -18,6 +18,7 @@ export default async function handler(req, res) {
 
             const results = await Payment.find({},
                 [
+                    "_id",
                     "id",
                     "order_number",
                     "order_amount",
