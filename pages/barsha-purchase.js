@@ -573,7 +573,10 @@ export default function Register() {
                       <label
                         className="inline-block font-bold"
                         style={{
-                          color: i === 0 || i === 1 ? "lightgrey" : "inherit",
+                          color:
+                            i === 0 || i === 1 || i === 2
+                              ? "lightgrey"
+                              : "inherit",
                         }}
                       >
                         {`Week ${i + 1} (${datesText[i]})`}
