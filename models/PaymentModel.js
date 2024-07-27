@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema({
-  _id: String,
   id: String,
   order_number: String,
   order_amount: Number,
