@@ -1,7 +1,10 @@
 import dbConnect from "../../utils/dbConnect";
 import { sendBookingConfirmationEmail } from "../../utils/sendEmail";
+import cors from "../../utils/corsMiddleware";
 
 export default async function handler(req, res) {
+  await cors(req, res);
+
   await dbConnect();
   try {
     const apiKey = req.headers["api_key"];
