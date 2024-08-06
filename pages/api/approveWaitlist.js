@@ -1,11 +1,12 @@
 import CryptoJS from "crypto-js";
 
 import dbConnect from "../../utils/dbConnect"; // Ensure this utility is correctly set up
-
+import cors from "../../utils/corsMiddleware";
 import Order from "../../models/OrderModel";
 import { sendWaitlistAcceptanceEmail } from "../../utils/sendEmail";
 
 export default async function handler(req, res) {
+    await cors()
     await dbConnect();
 
     if (req.headers["api_key"] !== process.env.API_KEY) {
