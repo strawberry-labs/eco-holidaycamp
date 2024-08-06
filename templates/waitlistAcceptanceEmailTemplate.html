@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Waitlist Acceptance</title>
+    <link href="https://cdn.strawberrylabs.net/strawberrylabs/fonts/Co%20Headline.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: "CoHeadline", sans-serif;
+            /* Custom font */
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .email-container {
+            background-color: #ffffff;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            /* Ensures all content inside the container is centered */
+            max-width: 600px;
+            /* Adjust as necessary */
+        }
+
+        .email-logo img {
+            width: 240px;
+            /* Increased size of the logo */
+        }
+
+        .email-text {
+            font-size: 16px;
+            /* Slightly larger paragraph size */
+            margin: 20px 0px 40px 0px;
+            /* Top and bottom margin for paragraph */
+        }
+
+        .email-button {
+            background-color: #4caf50;
+            /* Grass green */
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 5px;
+            margin-top: 80px;
+            /* Space above the button */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="email-logo">
+            <img src="https://cdn.strawberrylabs.net/strawberrylabs/ecoventure-main-logo.png" alt="Ecoventure Logo" />
+        </div>
+        <h1>Waitlist Acceptance</h1>
+        <p class="email-text">
+            Your order has been accepted from the waitlist!
+            <br />
+            <br />
+            Your booking with order number -
+            <strong>{{orderId}}</strong> is pending for payment. Please click below
+            button to proceed for payment. Link is valid only for 1 hour.
+        </p>
+        <a href="{{bookingLink}}" class="email-button">Pay Now</a>
+    </div>
+</body>
+
+</html>

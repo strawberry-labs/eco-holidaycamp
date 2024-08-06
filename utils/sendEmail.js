@@ -319,3 +319,249 @@ export const sendGroupingEmail = async (
     throw new Error("Grouping email sending failed");
   }
 };
+
+const getHtmlWaitlistUserEmailContent = (emergencyContact1Name,
+  attendees) => {
+  const filePath = path.join(
+    process.cwd(),
+    "templates",
+    "waitlistUserEmailTemplate.html"
+  );
+  console.log(filePath);
+  let htmlContent = fs.readFileSync(filePath, "utf8");
+  htmlContent = htmlContent.replace(
+    "{{emergencyContact1Name}}",
+    emergencyContact1Name
+  );
+
+  console.log(attendees)
+
+  const attendeesString = attendees
+    .map((attendee, _idx) => `${_idx + 1}. <strong> ${attendee.firstName} ${attendee.lastName} </strong> <br/>`)
+    .reduce((accumulator, attendee) => accumulator + attendee, "")
+
+  htmlContent = htmlContent.replace("{{attendees}}", attendeesString)
+
+  return htmlContent;
+}
+
+export const sendWaitlistUserEmail = async (
+  toEmail,
+  attendees,
+  emergencyContact1Name
+) => {
+  const htmlBody = getHtmlWaitlistUserEmailContent(emergencyContact1Name, attendees);
+
+  const params = {
+    Source: "Ecoventure Bookings <info@ecoventureme.com>",
+    Destination: {
+      ToAddresses: [toEmail],
+    },
+    Message: {
+      Subject: {
+        Data: "Waitlist - Holiday Camp",
+      },
+      Body: {
+        Html: {
+          Data: htmlBody,
+        },
+      },
+    },
+  };
+
+  try {
+    const data = await ses.sendEmail(params).promise();
+    console.log("Email sent:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    throw new Error("Email sending failed");
+  }
+};
+
+const getHtmlWaitlistAdminEmailContent = (orderId) => {
+  const filePath = path.join(
+    process.cwd(),
+    "templates",
+    "waitlistAdminEmailTemplate.html"
+  );
+  console.log(filePath);
+  let htmlContent = fs.readFileSync(filePath, "utf8");
+  htmlContent = htmlContent.replace("{{order_id}}", orderId);
+  return htmlContent;
+}
+
+export const sendWaitlistAdminEmail = async (
+  orderId,
+) => {
+  const htmlBody = getHtmlWaitlistAdminEmailContent(orderId);
+
+  const params = {
+    Source: "Ecoventure Bookings <info@ecoventureme.com>",
+    Destination: {
+      ToAddresses: ["info@ecoventureme.com", "chirag@strawberrylabs.net"],
+    },
+    Message: {
+      Subject: {
+        Data: "Waitlist - Holiday Camp",
+      },
+      Body: {
+        Html: {
+          Data: htmlBody,
+        },
+      },
+    },
+  };
+
+  try {
+    const data = await ses.sendEmail(params).promise();
+    console.log("Email sent:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    throw new Error("Email sending failed");
+  }
+};
+
+const getHtmlWaitlistRejectionUserEmailContent = (emergencyContact1Name, orderId) => {
+  const filePath = path.join(
+    process.cwd(),
+    "templates",
+    "waitlistRejectionUserEmailTemplate.html"
+  );
+  console.log(filePath);
+  let htmlContent = fs.readFileSync(filePath, "utf8");
+  htmlContent = htmlContent.replace(
+    "{{emergencyContact1Name}}",
+    emergencyContact1Name
+  );
+  htmlContent = htmlContent.replace("{{order_id}}", orderId);
+  return htmlContent;
+}
+
+export const sendWaitlistRejectionUserEmail = async (
+  toEmail,
+  orderId,
+  emergencyContact1Name
+) => {
+  const htmlBody = getHtmlWaitlistRejectionUserEmailContent(emergencyContact1Name, orderId);
+
+  const params = {
+    Source: "Ecoventure Bookings <info@ecoventureme.com>",
+    Destination: {
+      ToAddresses: [toEmail],
+    },
+    Message: {
+      Subject: {
+        Data: "Waitlist Rejected - Holiday Camp",
+      },
+      Body: {
+        Html: {
+          Data: htmlBody,
+        },
+      },
+    },
+  };
+
+  try {
+    const data = await ses.sendEmail(params).promise();
+    console.log("Email sent:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    throw new Error("Email sending failed");
+  }
+};
+
+
+const getHtmlWaitlistRejectionAdminEmailContent = (orderId) => {
+  const filePath = path.join(
+    process.cwd(),
+    "templates",
+    "waitlistRejectionAdminEmailTemplate.html"
+  );
+  console.log(filePath);
+  let htmlContent = fs.readFileSync(filePath, "utf8");
+  htmlContent = htmlContent.replace("{{order_id}}", orderId);
+  return htmlContent;
+}
+
+export const sendWaitlistRejectionAdminEmail = async (
+  orderId,
+) => {
+  const htmlBody = getHtmlWaitlistRejectionAdminEmailContent(orderId);
+
+  const params = {
+    Source: "Ecoventure Bookings <info@ecoventureme.com>",
+    Destination: {
+      ToAddresses: ["info@ecoventureme.com", "chirag@strawberrylabs.net"],
+    },
+    Message: {
+      Subject: {
+        Data: "Waitlist Rejection - Holiday Camp",
+      },
+      Body: {
+        Html: {
+          Data: htmlBody,
+        },
+      },
+    },
+  };
+
+  try {
+    const data = await ses.sendEmail(params).promise();
+    console.log("Email sent:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    throw new Error("Email sending failed");
+  }
+};
+
+const getWaitlistAcceptanceEmailContent = (orderId, bookingLink) => {
+  const filePath = path.join(
+    process.cwd(),
+    "templates",
+    "waitlistAcceptanceEmailTemplate.html"
+  );
+  console.log(filePath);
+  let htmlContent = fs.readFileSync(filePath, "utf8");
+  htmlContent = htmlContent.replace("{{orderId}}", orderId);
+  htmlContent = htmlContent.replace("{{bookingLink}}", bookingLink);
+  return htmlContent;
+};
+
+// Send Email Function
+export const sendWaitlistAcceptanceEmail = async (
+  toEmail,
+  orderId,
+  bookingLink
+) => {
+  const htmlBody = getWaitlistAcceptanceEmailContent(orderId, bookingLink);
+
+  const params = {
+    Source: "Ecoventure Bookings <info@ecoventureme.com>",
+    Destination: {
+      ToAddresses: [toEmail],
+    },
+    Message: {
+      Subject: {
+        Data: "Waitlist Accepted - Holiday Camp",
+      },
+      Body: {
+        Html: {
+          Data: htmlBody,
+        },
+      },
+    },
+  };
+
+  try {
+    const data = await ses.sendEmail(params).promise();
+    console.log("Email sent:", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to send email:", error);
+    throw new Error("Email sending failed");
+  }
+};
