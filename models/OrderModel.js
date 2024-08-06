@@ -22,6 +22,7 @@ const orderSchema = new mongoose.Schema({
   promoCode: { type: String, default: null },
   discount: { type: Number, default: null },
   discountType: { type: String, enum: ["percentage", "flat"], default: null },
+  notes: { type: String, default: null }
 });
 
 export default mongoose.models.Order || mongoose.model("Order", orderSchema);

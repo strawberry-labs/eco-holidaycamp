@@ -4,7 +4,7 @@ import Order from "../../models/OrderModel";
 import { sendWaitlistRejectionAdminEmail, sendWaitlistRejectionUserEmail } from "../../utils/sendEmail";
 
 export default async function handler(req, res) {
-    await cors()
+    await cors(req, res)
     await dbConnect();
 
     if (req.headers["api_key"] !== process.env.API_KEY) {
