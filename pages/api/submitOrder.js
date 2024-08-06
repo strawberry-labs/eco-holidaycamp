@@ -66,9 +66,12 @@ export default async function handler(req, res) {
 
       // Determine the order status based on the day of the week
       const dayOfWeek = new Date().getDay();
-      const status = "PENDING_PAYMENT";
+      const status = orderDetails.location == "Kings' School Al Barsha" && attendees.some((attendee) => attendee.weeks.selectedWeeks[4] == true) ? "WAITLIST" : "PENDING_PAYMENT";
+
       // dayOfWeek === 6 || dayOfWeek === 0 ? "WAITLIST" : "PENDING_PAYMENT";
       // attendees.every((attendee, idx) => parseInt(attendee.ageGroup) >= 7) ? "WAITLIST" : "PENDING_PAYMENT"
+      // orderDetails.location == "Kings' School Al Barsha" && attendees.some((attendee) => attendee.weeks.selectedWeeks[4] == true)
+
 
       // Create the order in the database
       const newOrder = await new Order({
