@@ -51,6 +51,7 @@ export default async function handler(req, res) {
                     week5: attendee.weeks.selectedWeeks[4],
                     week6: attendee.weeks.selectedWeeks[5],
                 })),
+                notes: order.notes
             }));
 
             res.status(200).json({ success: true, data: transformedOrders });
