@@ -335,6 +335,38 @@ export default async function handler(req, res) {
         try {
             //await dbConnect();
 
+            const daysOfWeek = body.daysOfWeek;
+
+            let details = []
+
+            for (let i = 0; i < daysOfWeek.length; i += 1) {
+                const week = daysOfWeek[i]
+
+                if (week.length == 0) continue
+
+                let subDetails = {}
+                subDetails["week"] = `Week ${i + 1}`
+
+                let priceDetails = []
+
+                if (week.length == 5) {
+                    priceDetails.push({
+                        description: "Full Week",
+                        cost: body.attendeesInSameOrder > 1 ? 845 : 945
+                    })
+                } else {
+                    priceDetails = daysOfWeek[i].map((day) => {
+                        return {
+                            description: day,
+                            cost: 200
+                        }
+                    })
+                }
+
+                subDetails["details"] = priceDetails
+                details.push(subDetails)
+            }
+
             // Construct the update object dynamically based on provided group details
             const update = {
                 firstName: body.firstName,
@@ -358,7 +390,8 @@ export default async function handler(req, res) {
                     daysOfWeek: body.daysOfWeek,
                 },
                 priceDetails: {
-                    price: body.price
+                    price: body.price,
+                    details: details
                 }
 
             };

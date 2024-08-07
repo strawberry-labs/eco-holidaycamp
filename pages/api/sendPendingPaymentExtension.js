@@ -2,8 +2,11 @@ import dbConnect from "../../utils/dbConnect";
 import { sendBookingPendingEmail } from "../../utils/sendEmail";
 import Order from "../../models/OrderModel"; // Update path as necessary
 import CryptoJS from "crypto-js";
+import cors from "../../utils/corsMiddleware";
 
 export default async function handler(req, res) {
+  await cors(req, res);
+
   await dbConnect();
   try {
     const apiKey = req.headers["api_key"];
