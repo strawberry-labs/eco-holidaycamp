@@ -56,7 +56,8 @@ export default async function handler(req, res) {
                     week5Group: attendee.week5Group,
                     week6Group: attendee.week6Group,
 
-                }))
+                })),
+                notes: order.notes
             };
 
             res.status(200).json({ success: true, data: transformedOrder });
