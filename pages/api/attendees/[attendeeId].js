@@ -333,7 +333,7 @@ export default async function handler(req, res) {
         }
 
         try {
-            //await dbConnect();
+            await dbConnect();
 
             const daysOfWeek = body.daysOfWeek;
 
