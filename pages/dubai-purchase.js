@@ -569,14 +569,24 @@ export default function Register() {
                           `form${index}_weeks`
                         )}`}
                         disabled={
-                          i === 0 || i === 1 || i === 2 || i === 3 || i === 4
+                          i === 0 ||
+                          i === 1 ||
+                          i === 2 ||
+                          i === 3 ||
+                          i === 4 ||
+                          i === 5
                         }
                       />
                       <label
                         className="inline-block font-bold"
                         style={{
                           color:
-                            i === 0 || i === 1 || i === 2 || i === 3 || i === 4
+                            i === 0 ||
+                            i === 1 ||
+                            i === 2 ||
+                            i === 3 ||
+                            i === 4 ||
+                            i === 5
                               ? "lightgrey"
                               : "inherit",
                         }}
