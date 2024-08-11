@@ -568,13 +568,15 @@ export default function Register() {
                         className={`mx-1 rounded ${getBorderClass(
                           `form${index}_weeks`
                         )}`}
-                        disabled={i === 0 || i === 1 || i === 2 || i === 3}
+                        disabled={
+                          i === 0 || i === 1 || i === 2 || i === 3 || i === 4
+                        }
                       />
                       <label
                         className="inline-block font-bold"
                         style={{
                           color:
-                            i === 0 || i === 1 || i === 2 || i === 3
+                            i === 0 || i === 1 || i === 2 || i === 3 || i === 4
                               ? "lightgrey"
                               : "inherit",
                         }}
