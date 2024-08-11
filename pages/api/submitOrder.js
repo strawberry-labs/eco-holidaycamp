@@ -3,7 +3,11 @@ import dbConnect from "../../utils/dbConnect"; // Ensure this utility is correct
 import Order from "../../models/OrderModel"; // Include the Order model
 import Attendee from "../../models/AttendeeModel"; // Include the Attendee model
 import PromoCode from "../../models/PromoCodeModel"; // Include the PromoCode model
-import { sendBookingPendingEmail, sendWaitlistAdminEmail, sendWaitlistUserEmail } from "../../utils/sendEmail";
+import {
+  sendBookingPendingEmail,
+  sendWaitlistAdminEmail,
+  sendWaitlistUserEmail,
+} from "../../utils/sendEmail";
 
 export default async function handler(req, res) {
   await dbConnect();
@@ -66,12 +70,17 @@ export default async function handler(req, res) {
 
       // Determine the order status based on the day of the week
       const dayOfWeek = new Date().getDay();
-      const status = orderDetails.location == "Kings' School Al Barsha" && attendees.some((attendee) => attendee.weeks.selectedWeeks[4] == true) ? "WAITLIST" : "PENDING_PAYMENT";
+      const status =
+        orderDetails.location == "Kings' School Al Barsha" &&
+        attendees.some(
+          (attendee) => attendee.ageGroup === "5" || attendee.ageGroup === "6"
+        )
+          ? "WAITLIST"
+          : "PENDING_PAYMENT";
 
       // dayOfWeek === 6 || dayOfWeek === 0 ? "WAITLIST" : "PENDING_PAYMENT";
       // attendees.every((attendee, idx) => parseInt(attendee.ageGroup) >= 7) ? "WAITLIST" : "PENDING_PAYMENT"
       // orderDetails.location == "Kings' School Al Barsha" && attendees.some((attendee) => attendee.weeks.selectedWeeks[4] == true)
-
 
       // Create the order in the database
       const newOrder = await new Order({
@@ -165,26 +174,19 @@ export default async function handler(req, res) {
             .json({ error: "Failed to process payment" });
         }
       } else if (status == "WAITLIST") {
-
         // Update promo code usage if valid
         if (promoCode) {
           promoCode.usedBy.push(newOrder._id);
           await promoCode.save();
         }
 
-        await sendWaitlistUserEmail(
-          orderDetails.email,
-          attendees,
-          nameForPG
-        );
+        await sendWaitlistUserEmail(orderDetails.email, attendees, nameForPG);
 
-        await sendWaitlistAdminEmail(
-          orderNumber
-        )
+        await sendWaitlistAdminEmail(orderNumber);
 
         res
           .status(200)
-          .json({ redirect_url: `${process.env.PUBLIC_BASE_URL}/waitlist` })
+          .json({ redirect_url: `${process.env.PUBLIC_BASE_URL}/waitlist` });
       } else {
         res
           .status(200)
