@@ -40,6 +40,7 @@ const paymentSchema = new mongoose.Schema({
   exchange_amount: { type: Number, default: 0 },
   vat_amount: { type: Number, default: 0 },
   hash: String,
+  mode: String
 });
 
 export default mongoose.models.Payment ||

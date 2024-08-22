@@ -56,6 +56,7 @@ export default async function handler(req, res) {
                     "exchange_currency",
                     "exchange_amount",
                     "vat_amount",
+                    "mode"
                 ])
 
             res.status(200).json({ success: true, data: results });

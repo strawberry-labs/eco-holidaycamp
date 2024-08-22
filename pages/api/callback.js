@@ -102,6 +102,7 @@ export default async function handler(req, res) {
         exchange_amount,
         vat_amount,
         hash,
+        mode: "online",
       });
 
       if (!verifyHash(callbackData)) {
