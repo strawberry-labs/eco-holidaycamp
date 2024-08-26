@@ -50,6 +50,7 @@ export default async function handler(req, res) {
                     week4: attendee.weeks.selectedWeeks[3],
                     week5: attendee.weeks.selectedWeeks[4],
                     week6: attendee.weeks.selectedWeeks[5],
+                    price: attendee.priceDetails.price
                 })),
                 notes: order.notes
             }));
