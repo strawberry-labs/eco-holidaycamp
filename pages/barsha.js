@@ -10,7 +10,7 @@ export default function Home() {
   const handleBuyClick = () => {
     router.push({
       pathname: "/barsha-purchase",
-      query: { type: "Regular Ticket", quantity: selectedQuantity },
+      query: { type: "Super Saver Ticket", quantity: selectedQuantity },
     });
   };
 
@@ -62,10 +62,10 @@ export default function Home() {
               className="mt-20 md:mt-2 text-3xl md:text-4xl font-bold mt-2"
               style={{ color: "#F5B028" }}
             >
-              SUMMER HOLIDAY CAMP AL BARSHA
+              HOLIDAY CAMP AL BARSHA
             </h1>
             <br />
-            <p>📅 July 8th - August 16th, 2024</p>
+            <p>📅 October 14th - October 18th, 2024</p>
             <p>{`📍 Kings' School Al Barsha`}</p>
             <button
               className="w-36 md:w-36 mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -87,7 +87,7 @@ export default function Home() {
             <div className="flex flex-col gap-4">
               <div className="flex mt-4 justify-between items-center">
                 <p>
-                  <strong>{`Regular Ticket `}</strong>
+                  <strong>{`Super Saver Ticket `}</strong>
                 </p>
                 <select
                   value={selectedQuantity}
@@ -131,7 +131,7 @@ function yourDangerousHTMLContent() {
     <p>Students will be assigned to activity groups based on age. In order to provide the most appropriate program for all students we are only able to group friends / siblings together if they are similar ages (within 2yrs).</p><br>
     <p>If you are registering on the <strong>WAITLIST</strong> for more than 1 child please complete 1 form per child.</p><br>
     <p>Sibling Discount is applied automatically to regular week pass rates.</p><br>
-    <p>Dates - July 8th - August 16th</p><br>
+    <p>Dates - October 14th - October 18th</p><br>
     <p><strong>We do not provide transport to and from camp.</strong></p><br>
     <p>ETB = Engineers To Be - please see program information in the FAQs for more details.</p><br>
     <p><a href="https://ecov.co/refunds" rel="noreferrer noopener" target="_blank"><strong><u>Click here to request a full or partial refund</u></strong></a></p><br>

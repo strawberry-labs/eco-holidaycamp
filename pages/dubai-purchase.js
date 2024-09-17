@@ -30,7 +30,7 @@ export default function Register() {
   });
 
   const datesText = [
-    "8th Jul - 12th Jul",
+    "14th Oct - 18th Oct",
     "15th Jul - 19th Jul",
     "22nd Jul - 26th Jul",
     "29th Jul - 2nd Aug",
@@ -116,21 +116,10 @@ export default function Register() {
     const currentForm = updatedForms[index].weeks;
     const { name, checked, value } = event.target;
 
-    if (name === "allWeeks") {
-      currentForm.allWeeks = checked;
-      currentForm.selectedWeeks.fill(checked);
-      currentForm.daysOfWeek.forEach((_, i) => {
-        currentForm.daysOfWeek[i] = checked
-          ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-          : [];
-      });
-    } else if (name.startsWith("week")) {
-      currentForm.selectedWeeks[weekIndex] = checked;
-      if (weekIndex === 0) {
-        currentForm.selectedWeeks[weekIndex] = false;
-      }
+    if (name.startsWith("week")) {
+      currentForm.selectedWeeks[0] = checked; // Only Week 1
       if (checked) {
-        currentForm.daysOfWeek[weekIndex] = [
+        currentForm.daysOfWeek[0] = [
           "Monday",
           "Tuesday",
           "Wednesday",
@@ -138,17 +127,18 @@ export default function Register() {
           "Friday",
         ];
       } else {
-        currentForm.daysOfWeek[weekIndex] = [];
+        currentForm.daysOfWeek[0] = [];
       }
     } else if (name.startsWith("day")) {
-      const dayArray = currentForm.daysOfWeek[weekIndex];
+      const dayArray = currentForm.daysOfWeek[0]; // Only Week 1 days
       const dayIndex = dayArray.indexOf(value);
       if (dayIndex > -1) {
-        dayArray.splice(dayIndex, 1);
+        dayArray.splice(dayIndex, 1); // Remove day if already selected
       } else {
-        dayArray.push(value);
+        dayArray.push(value); // Add day if not selected
       }
     }
+
     updatedForms[index].priceDetails = calculatePrice(updatedForms[index]);
     setForms(updatedForms);
   };
@@ -166,7 +156,7 @@ export default function Register() {
           let weekCost = 0;
           let weekDetails = [];
           if (form.weeks.daysOfWeek[weekIndex].length === 5) {
-            weekCost = parseInt(quantity || 1) > 1 ? 850 : 945; // Full week price
+            weekCost = 750; //parseInt(quantity || 1) > 1 ? 850 : 945; // Full week price
             weekDetails.push({ description: "Full week", cost: weekCost });
           } else {
             form.weeks.daysOfWeek[weekIndex].forEach((day) => {
@@ -530,73 +520,23 @@ export default function Register() {
                     </p>
                   </label>
                   <div className="mt-4">
-                    <label className="block font-bold mb-1">
+                    <div key={0} className="mt-2">
                       <input
                         type="checkbox"
-                        checked={form.weeks.allWeeks}
-                        onChange={(e) =>
-                          handleWeeksChange(index, null, {
-                            target: {
-                              name: "allWeeks",
-                              checked: e.target.checked,
-                            },
-                          })
-                        }
-                        name="allWeeks"
-                        className={`ml-2 rounded mx-1 ${getBorderClass(
-                          `form${index}_weeks`
-                        )}`}
-                      />{" "}
-                      Attend All Weeks
-                    </label>
-                    <p
-                      className={`text-xs ${
-                        form.weeks.allWeeks ? "" : "hidden"
-                      }`}
-                    >{`No refunds or credit notes are provided for any missed days when booking for the whole summer as this price is always significantly discounted`}</p>
-                  </div>
-                  {Array.from({ length: 6 }, (_, i) => (
-                    <div
-                      key={i}
-                      className={`mt-2 ${form.weeks.allWeeks ? "hidden" : ""}`}
-                    >
-                      <input
-                        type="checkbox"
-                        name={`week${i}`}
-                        checked={form.weeks.selectedWeeks[i]}
-                        onChange={(e) => handleWeeksChange(index, i, e)}
+                        name={`week1`}
+                        checked={form.weeks.selectedWeeks[0]}
+                        onChange={(e) => handleWeeksChange(index, 0, e)}
                         className={`mx-1 rounded ${getBorderClass(
                           `form${index}_weeks`
                         )}`}
-                        disabled={
-                          i === 0 ||
-                          i === 1 ||
-                          i === 2 ||
-                          i === 3 ||
-                          i === 4 ||
-                          i === 5
-                        }
                       />
-                      <label
-                        className="inline-block font-bold"
-                        style={{
-                          color:
-                            i === 0 ||
-                            i === 1 ||
-                            i === 2 ||
-                            i === 3 ||
-                            i === 4 ||
-                            i === 5
-                              ? "lightgrey"
-                              : "inherit",
-                        }}
-                      >
-                        {`Week ${i + 1} (${datesText[i]})`}
+                      <label className="inline-block font-bold">
+                        {`Week 1 (${datesText[0]})`}
                       </label>
 
                       <div
                         className={`pl-4 grid grid-cols-5 gap-2 ${
-                          form.weeks.selectedWeeks[i] ? "" : "hidden"
+                          form.weeks.selectedWeeks[0] ? "" : "hidden"
                         }`}
                       >
                         {[
@@ -612,24 +552,23 @@ export default function Register() {
                           >
                             <input
                               type="checkbox"
-                              name={`day${i}${day}`}
+                              name={`day1${day}`}
                               value={day}
-                              checked={form.weeks.daysOfWeek[i].includes(day)}
+                              className="rounded"
+                              checked={form.weeks.daysOfWeek[0].includes(day)}
                               onChange={(e) =>
-                                handleWeeksChange(index, i, {
+                                handleWeeksChange(index, 0, {
                                   ...e,
                                   name: "day",
                                 })
                               }
-                              disabled={!form.weeks.selectedWeeks[i]}
-                              className="ml-2 rounded mx-1"
                             />{" "}
                             {day}
                           </label>
                         ))}
                       </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             ))}
