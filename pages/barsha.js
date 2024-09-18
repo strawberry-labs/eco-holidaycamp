@@ -62,7 +62,7 @@ export default function Home() {
               className="mt-20 md:mt-2 text-3xl md:text-4xl font-bold mt-2"
               style={{ color: "#F5B028" }}
             >
-              HOLIDAY CAMP AL BARSHA
+              OCTOBER HALF TERM HOLIDAY CAMP AL BARSHA
             </h1>
             <br />
             <p>📅 October 14th - October 18th, 2024</p>
