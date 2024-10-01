@@ -10,7 +10,7 @@ export default function Home() {
   const handleBuyClick = () => {
     router.push({
       pathname: "/dubai-purchase",
-      query: { type: "Super Saver Ticket", quantity: selectedQuantity },
+      query: { type: "Early Bird Ticket", quantity: selectedQuantity },
     });
   };
 
@@ -87,7 +87,7 @@ export default function Home() {
             <div className="flex flex-col gap-4">
               <div className="flex mt-4 justify-between items-center">
                 <p>
-                  <strong>{`Super Saver Ticket `}</strong>
+                  <strong>{`Early Bird Ticket `}</strong>
                 </p>
                 <select
                   value={selectedQuantity}
