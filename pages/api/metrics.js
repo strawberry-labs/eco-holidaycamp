@@ -15,9 +15,13 @@ export default async function handler(req, res) {
           .json({ success: false, message: "Unauthorized" });
       }
 
+      const filter = new Date('2024/9/18')
+
+      console.log(filter)
+
       await dbConnect();
 
-      const paidOrders = await Order.find({ status: "PAID" });
+      const paidOrders = await Order.find({ status: "PAID", createdTime: { $gte: filter } });
       const attendeeIds = paidOrders.flatMap((order) => order.attendees);
       const totalAttendees = await Attendee.countDocuments({
         _id: { $in: attendeeIds },
@@ -25,6 +29,11 @@ export default async function handler(req, res) {
       const totalOrders = paidOrders.length;
 
       const totalRevenue = await Payment.aggregate([
+        {
+          $match: {
+            date: { $gte: filter }
+          }
+        },
         {
           $facet: {
             sales: [
@@ -52,11 +61,16 @@ export default async function handler(req, res) {
       console.log(totalRevenue);
 
       const ordersByStatus = await Order.aggregate([
+        {
+          $match: {
+            createdTime: { $gte: filter }
+          }
+        },
         { $group: { _id: "$status", count: { $sum: 1 } } },
       ]);
 
       const revenueByDate = await Payment.aggregate([
-        { $match: { status: "success", type: "sale" } },
+        { $match: { status: "success", type: "sale", date: { $gte: filter } } },
         {
           $group: {
             _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
@@ -74,7 +88,7 @@ export default async function handler(req, res) {
       ]);
 
       const revenueByLocation = await Order.aggregate([
-        { $match: { status: "PAID" } },
+        { $match: { status: "PAID", createdTime: { $gte: filter } } },
         {
           $lookup: {
             from: "payments",
@@ -131,7 +145,7 @@ export default async function handler(req, res) {
       ]);
 
       const attendeeCountByLocationAndActivity = await Order.aggregate([
-        { $match: { status: "PAID" } },
+        { $match: { status: "PAID", createdTime: { $gte: filter } } },
         {
           $lookup: {
             from: "attendees",
