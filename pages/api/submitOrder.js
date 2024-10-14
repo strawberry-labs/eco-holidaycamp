@@ -77,7 +77,7 @@ export default async function handler(req, res) {
         // )
         //   ? "WAITLIST"
         //   :
-        "PENDING_PAYMENT";
+        "WAITLIST";
 
       // dayOfWeek === 6 || dayOfWeek === 0 ? "WAITLIST" : "PENDING_PAYMENT";
       // attendees.every((attendee, idx) => parseInt(attendee.ageGroup) >= 7) ? "WAITLIST" : "PENDING_PAYMENT"

@@ -13,7 +13,10 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: "Invalid week parameter" });
       }
 
-      const orders = await Order.find({ status: "PAID" }).populate("attendees");
+      const orders = await Order.find({
+        status: "PAID",
+        createdTime: { $gt: new Date("2024-09-18T00:00:00Z") }, // Ensure the correct date format
+      }).populate("attendees");
 
       let count = 1;
       for (const order of orders) {

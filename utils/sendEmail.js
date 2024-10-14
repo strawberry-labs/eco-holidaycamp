@@ -85,10 +85,11 @@ const getHtmlConfirmationEmailContent = (order) => {
       attendee.priceDetails.details.forEach((weekDetail) => {
         attendeesDetails += `<tr><td colspan="3">${weekDetail.week}</td></tr>`;
         weekDetail.details.forEach((detail) => {
-          attendeesDetails += `<tr><td style="padding-left: 20px;">${detail.description
-            }</td><td style="text-align: right;">AED ${detail.cost.toFixed(
-              2
-            )}</td></tr>`;
+          attendeesDetails += `<tr><td style="padding-left: 20px;">${
+            detail.description
+          }</td><td style="text-align: right;">AED ${detail.cost.toFixed(
+            2
+          )}</td></tr>`;
         });
       });
     }
@@ -107,10 +108,11 @@ const getHtmlConfirmationEmailContent = (order) => {
         ? (subtotal * order.discount) / 100
         : order.discount;
     subtotal -= discountAmount;
-    attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Promo Code (${order.promoCode
-      }) Discount:</strong></td><td style="text-align: right;">AED ${discountAmount.toFixed(
-        2
-      )}</td></tr>`;
+    attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Promo Code (${
+      order.promoCode
+    }) Discount:</strong></td><td style="text-align: right;">AED ${discountAmount.toFixed(
+      2
+    )}</td></tr>`;
   }
 
   attendeesDetails += `<tr><td colspan="2" style="text-align:right;"><strong>Total:</strong></td><td style="text-align: right;">AED ${subtotal.toFixed(
@@ -300,7 +302,7 @@ export const sendGroupingEmail = async (
     },
     Message: {
       Subject: {
-        Data: `Holiday Camp Grouping | ${attendee.firstName} ${attendee.lastName} | Week ${week}`,
+        Data: `Precamp - October Half Term Holiday Camp | ${attendee.firstName} ${attendee.lastName}`,
       },
       Body: {
         Html: {
@@ -320,8 +322,7 @@ export const sendGroupingEmail = async (
   }
 };
 
-const getHtmlWaitlistUserEmailContent = (emergencyContact1Name,
-  attendees) => {
+const getHtmlWaitlistUserEmailContent = (emergencyContact1Name, attendees) => {
   const filePath = path.join(
     process.cwd(),
     "templates",
@@ -334,23 +335,31 @@ const getHtmlWaitlistUserEmailContent = (emergencyContact1Name,
     emergencyContact1Name
   );
 
-  console.log(attendees)
+  console.log(attendees);
 
   const attendeesString = attendees
-    .map((attendee, _idx) => `${_idx + 1}. <strong> ${attendee.firstName} ${attendee.lastName} </strong> <br/>`)
-    .reduce((accumulator, attendee) => accumulator + attendee, "")
+    .map(
+      (attendee, _idx) =>
+        `${_idx + 1}. <strong> ${attendee.firstName} ${
+          attendee.lastName
+        } </strong> <br/>`
+    )
+    .reduce((accumulator, attendee) => accumulator + attendee, "");
 
-  htmlContent = htmlContent.replace("{{attendees}}", attendeesString)
+  htmlContent = htmlContent.replace("{{attendees}}", attendeesString);
 
   return htmlContent;
-}
+};
 
 export const sendWaitlistUserEmail = async (
   toEmail,
   attendees,
   emergencyContact1Name
 ) => {
-  const htmlBody = getHtmlWaitlistUserEmailContent(emergencyContact1Name, attendees);
+  const htmlBody = getHtmlWaitlistUserEmailContent(
+    emergencyContact1Name,
+    attendees
+  );
 
   const params = {
     Source: "Ecoventure Bookings <info@ecoventureme.com>",
@@ -389,11 +398,9 @@ const getHtmlWaitlistAdminEmailContent = (orderId) => {
   let htmlContent = fs.readFileSync(filePath, "utf8");
   htmlContent = htmlContent.replace("{{order_id}}", orderId);
   return htmlContent;
-}
+};
 
-export const sendWaitlistAdminEmail = async (
-  orderId,
-) => {
+export const sendWaitlistAdminEmail = async (orderId) => {
   const htmlBody = getHtmlWaitlistAdminEmailContent(orderId);
 
   const params = {
@@ -423,7 +430,10 @@ export const sendWaitlistAdminEmail = async (
   }
 };
 
-const getHtmlWaitlistRejectionUserEmailContent = (emergencyContact1Name, orderId) => {
+const getHtmlWaitlistRejectionUserEmailContent = (
+  emergencyContact1Name,
+  orderId
+) => {
   const filePath = path.join(
     process.cwd(),
     "templates",
@@ -437,14 +447,17 @@ const getHtmlWaitlistRejectionUserEmailContent = (emergencyContact1Name, orderId
   );
   htmlContent = htmlContent.replace("{{order_id}}", orderId);
   return htmlContent;
-}
+};
 
 export const sendWaitlistRejectionUserEmail = async (
   toEmail,
   orderId,
   emergencyContact1Name
 ) => {
-  const htmlBody = getHtmlWaitlistRejectionUserEmailContent(emergencyContact1Name, orderId);
+  const htmlBody = getHtmlWaitlistRejectionUserEmailContent(
+    emergencyContact1Name,
+    orderId
+  );
 
   const params = {
     Source: "Ecoventure Bookings <info@ecoventureme.com>",
@@ -473,7 +486,6 @@ export const sendWaitlistRejectionUserEmail = async (
   }
 };
 
-
 const getHtmlWaitlistRejectionAdminEmailContent = (orderId) => {
   const filePath = path.join(
     process.cwd(),
@@ -484,11 +496,9 @@ const getHtmlWaitlistRejectionAdminEmailContent = (orderId) => {
   let htmlContent = fs.readFileSync(filePath, "utf8");
   htmlContent = htmlContent.replace("{{order_id}}", orderId);
   return htmlContent;
-}
+};
 
-export const sendWaitlistRejectionAdminEmail = async (
-  orderId,
-) => {
+export const sendWaitlistRejectionAdminEmail = async (orderId) => {
   const htmlBody = getHtmlWaitlistRejectionAdminEmailContent(orderId);
 
   const params = {
